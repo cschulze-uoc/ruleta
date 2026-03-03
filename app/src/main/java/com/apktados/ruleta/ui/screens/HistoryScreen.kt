@@ -1,4 +1,4 @@
-package com.apktados.ruleta
+package com.apktados.ruleta.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
