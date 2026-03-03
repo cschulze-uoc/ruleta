@@ -19,6 +19,9 @@ import com.apktados.ruleta.game.*
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import com.apktados.ruleta.data.Partida
+import com.apktados.ruleta.data.PartidasRepository
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +72,20 @@ private fun HomeScreen(
     onHistorial: () -> Unit
 ) {
     var jugador by remember { mutableStateOf("Carlos") }
-    val monedasIniciales = 3
+
+    val context = LocalContext.current
+    val repo = remember { PartidasRepository(context) }
+
+    var top3 by remember { mutableStateOf<List<Partida>>(emptyList()) }
+    var loading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        loading = true
+        top3 = withContext(Dispatchers.IO) {
+            repo.top10().take(3)
+        }
+        loading = false
+    }
 
     Column(
         modifier = Modifier
@@ -87,8 +103,6 @@ private fun HomeScreen(
             singleLine = true
         )
 
-        Text("Monedas iniciales: $monedasIniciales")
-
         Button(
             onClick = { onNuevaPartida(jugador) },
             modifier = Modifier.fillMaxWidth()
@@ -101,6 +115,20 @@ private fun HomeScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Historial")
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text("🏆 Mejores puntuaciones")
+
+        when {
+            loading -> Text("Cargando...")
+            top3.isEmpty() -> Text("Aún no hay partidas.")
+            else -> {
+                top3.forEachIndexed { index, partida ->
+                    Text("${index + 1}. ${partida.jugador} - ${partida.monedasFinales} monedas")
+                }
+            }
         }
     }
 }
