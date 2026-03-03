@@ -23,6 +23,13 @@ import kotlinx.coroutines.withContext
 import com.apktados.ruleta.data.Partida
 import com.apktados.ruleta.data.PartidasRepository
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
+import kotlinx.coroutines.delay
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -133,11 +140,15 @@ private fun HomeScreen(
     }
 }
 
+
+
 @Composable
 fun GameScreen(
     jugador: String,
     navController: NavController
 ) {
+    val rotation = remember { Animatable(0f) }
+    var girando by remember { mutableStateOf(false) }
 
     val engine = remember { RuletaEngine() }
 
@@ -186,7 +197,23 @@ fun GameScreen(
 
         Text("Jugador: $jugador")
         Text("Monedas: $monedas")
-
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(220.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ruleta),
+                contentDescription = "Ruleta",
+                modifier = Modifier
+                    .size(200.dp)
+                    .graphicsLayer(rotationZ = rotation.value)
+            )
+        }
+        if (girando) {
+            Text("Girando…")
+        }
         Spacer(modifier = Modifier.height(8.dp))
 
         // 🔹 SELECTOR DE CANTIDAD
@@ -249,32 +276,60 @@ fun GameScreen(
 
         Button(
             onClick = {
-
+                if (girando) return@Button
                 if (apuestasSeleccionadas.isEmpty()) return@Button
                 if (cantidadApuesta > monedas) return@Button
 
-                val nuevoResultado = engine.girar()
-                resultado = nuevoResultado
+                // Bloqueamos UI
+                girando = true
 
-                monedas -= cantidadApuesta
+                // Lanzamos animación + resolución
+                scope.launch {
 
-                apuestasSeleccionadas.forEach { tipo ->
-                    val gano = ApuestaEvaluator.esGanadora(tipo, nuevoResultado)
-                    if (gano) {
-                        monedas += cantidadApuesta * 2
+                    // Gira entre 3 y 6 vueltas
+                    val vueltas = (3..6).random()
+                    val extra = (0..359).random()
+                    val target = rotation.value + (vueltas * 360f) + extra
+
+                    // Animación
+                    rotation.animateTo(
+                        targetValue = target,
+                        animationSpec = tween(durationMillis = 1500)
+                    )
+
+                    // Pequeña pausa para "efecto"
+                    delay(150)
+
+                    // Calculamos resultado y aplicamos lógica
+                    val nuevoResultado = engine.girar()
+                    resultado = nuevoResultado
+
+                    monedas -= cantidadApuesta
+
+                    apuestasSeleccionadas.forEach { tipo ->
+                        val gano = ApuestaEvaluator.esGanadora(tipo, nuevoResultado)
+                        if (gano) {
+                            monedas += cantidadApuesta * 2
+                        }
                     }
+
+                    if (cantidadApuesta > monedas) {
+                        cantidadApuesta = monedas.coerceAtLeast(1)
+                    }
+
+                    if (monedas <= 0) {
+                        partidaFinalizada = true
+                    }
+
+                    // Desbloqueamos UI
+                    girando = false
                 }
-
-                if (cantidadApuesta > monedas) {
-                    cantidadApuesta = monedas.coerceAtLeast(1)
-                }
-
-
             },
-            enabled = apuestasSeleccionadas.isNotEmpty() &&
+            enabled = !girando &&
+                    !partidaFinalizada &&
+                    apuestasSeleccionadas.isNotEmpty() &&
                     monedas >= cantidadApuesta &&
-                    monedas > 0 &&
-                    !partidaFinalizada
+                    monedas > 0
         ) {
             Text("Girar ruleta")
         }
