@@ -1,7 +1,8 @@
-package com.apktados.ruleta
+package com.apktados.ruleta.ui.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,7 +20,7 @@ fun ApuestaCheckbox(
             checked = tipo in apuestasSeleccionadas,
             onCheckedChange = onCheckedChange
         )
-        Text(label)
+        Text(label,color = androidx.compose.ui.graphics.Color.White)
     }
 }
 

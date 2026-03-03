@@ -29,19 +29,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.apktados.ruleta.ApuestaCheckbox
+import com.apktados.ruleta.ui.components.ApuestaCheckbox
 import com.apktados.ruleta.R
 import com.apktados.ruleta.game.ApuestaEvaluator
 import com.apktados.ruleta.game.ResultadoRuleta
 import com.apktados.ruleta.game.RuletaEngine
 import com.apktados.ruleta.game.TipoApuesta
-import com.apktados.ruleta.toggleApuesta
+import com.apktados.ruleta.ui.components.toggleApuesta
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 @Composable
 public fun GameScreen(
     jugador: String,
@@ -64,203 +66,227 @@ public fun GameScreen(
     val repo = remember { com.apktados.ruleta.data.PartidasRepository(context) }
     val scope = rememberCoroutineScope()
 
-    if (partidaFinalizada) {
-        Spacer(modifier = Modifier.height(16.dp))
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
 
-        Card {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text("🏁 Partida finalizada")
-                Text("Monedas finales: $monedas")
+        // 🔹 Imagen de fondo
+        Image(
+            painter = painterResource(id = R.drawable.fondo_casino),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+        )
 
-                Button(
-                    onClick = {
-                        navController.navigate("home") {
-                            popUpTo("home") { inclusive = true }
-                        }
-                    }
-                ) {
-                    Text("Volver al menú")
-                }
-            }
-        }
-    }
-    else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-
-            Text("Jugador: $jugador")
-            Text("Monedas: $monedas")
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ruleta),
-                    contentDescription = "Ruleta",
-                    modifier = Modifier
-                        .size(200.dp)
-                        .graphicsLayer(rotationZ = rotation.value)
-                )
-            }
-            if (girando) {
-                Text("Girando…")
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // 🔹 SELECTOR DE CANTIDAD
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text("Cantidad:")
-
-                Button(
-                    onClick = { if (cantidadApuesta > 1) cantidadApuesta-- }
-                ) {
-                    Text("-")
-                }
-
-                Text("$cantidadApuesta")
-
-                Button(
-                    onClick = {
-                        if (cantidadApuesta < monedas) cantidadApuesta++
-                    }
-                ) {
-                    Text("+")
-                }
-            }
-
+        if (partidaFinalizada) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("Selecciona tus apuestas:")
+            Card {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("🏁 Partida finalizada",color = androidx.compose.ui.graphics.Color.White)
+                    Text("Monedas finales: $monedas",color = androidx.compose.ui.graphics.Color.White)
 
-            ApuestaCheckbox(
-                "Rojo", TipoApuesta.ROJO, apuestasSeleccionadas,
-                onCheckedChange = { checked ->
-                    apuestasSeleccionadas =
-                        toggleApuesta(apuestasSeleccionadas, TipoApuesta.ROJO, checked)
-                }
-            )
-            ApuestaCheckbox("Negro", TipoApuesta.NEGRO, apuestasSeleccionadas) { checked ->
-                apuestasSeleccionadas = toggleApuesta(apuestasSeleccionadas, TipoApuesta.NEGRO, checked)
-            }
-
-            ApuestaCheckbox("Par", TipoApuesta.PAR, apuestasSeleccionadas) { checked ->
-                apuestasSeleccionadas = toggleApuesta(apuestasSeleccionadas, TipoApuesta.PAR, checked)
-            }
-
-            ApuestaCheckbox("Impar", TipoApuesta.IMPAR, apuestasSeleccionadas) { checked ->
-                apuestasSeleccionadas = toggleApuesta(apuestasSeleccionadas, TipoApuesta.IMPAR, checked)
-            }
-
-            ApuestaCheckbox("Passe (19-36)", TipoApuesta.PASSE, apuestasSeleccionadas) { checked ->
-                apuestasSeleccionadas = toggleApuesta(apuestasSeleccionadas, TipoApuesta.PASSE, checked)
-            }
-
-            ApuestaCheckbox("Manque (1-18)", TipoApuesta.MANQUE, apuestasSeleccionadas) { checked ->
-                apuestasSeleccionadas =
-                    toggleApuesta(apuestasSeleccionadas, TipoApuesta.MANQUE, checked)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    if (girando) return@Button
-                    if (apuestasSeleccionadas.isEmpty()) return@Button
-                    if (cantidadApuesta > monedas) return@Button
-
-                    // Bloqueamos UI
-                    girando = true
-
-                    // Lanzamos animación + resolución
-                    scope.launch {
-
-                        // Gira entre 3 y 6 vueltas
-                        val vueltas = (3..6).random()
-                        val extra = (0..359).random()
-                        val target = rotation.value + (vueltas * 360f) + extra
-
-                        // Animación
-                        rotation.animateTo(
-                            targetValue = target,
-                            animationSpec = tween(durationMillis = 1500)
-                        )
-
-                        // Pequeña pausa para "efecto"
-                        delay(150)
-
-                        // Calculamos resultado y aplicamos lógica
-                        val nuevoResultado = engine.girar()
-                        resultado = nuevoResultado
-
-                        monedas -= cantidadApuesta
-
-                        apuestasSeleccionadas.forEach { tipo ->
-                            val gano = ApuestaEvaluator.esGanadora(tipo, nuevoResultado)
-                            if (gano) {
-                                monedas += cantidadApuesta * 2
+                    Button(
+                        onClick = {
+                            navController.navigate("home") {
+                                popUpTo("home") { inclusive = true }
                             }
                         }
-
-                        if (cantidadApuesta > monedas) {
-                            cantidadApuesta = monedas.coerceAtLeast(1)
-                        }
-
-                        if (monedas <= 0) {
-                            partidaFinalizada = true
-                        }
-
-                        // Desbloqueamos UI
-                        girando = false
+                    ) {
+                        Text("Volver al menú")
                     }
-                },
-                enabled = !girando &&
-                        !partidaFinalizada &&
-                        apuestasSeleccionadas.isNotEmpty() &&
-                        monedas >= cantidadApuesta &&
-                        monedas > 0
-            ) {
-                Text("Girar ruleta")
+                }
             }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
 
-            Button(
-                onClick = {
-                    partidaFinalizada = true
-                    scope.launch(Dispatchers.IO) {
-                        repo.guardarPartida(jugador = jugador, monedasFinales = monedas)
+                Text("Jugador: $jugador",color = androidx.compose.ui.graphics.Color.White)
+                Text("Monedas: $monedas",color = androidx.compose.ui.graphics.Color.White)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ruleta),
+                        contentDescription = "Ruleta",
+                        modifier = Modifier
+                            .size(200.dp)
+                            .graphicsLayer(rotationZ = rotation.value)
+                    )
+                }
+                if (girando) {
+                    Text("Girando…")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // 🔹 SELECTOR DE CANTIDAD
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("Cantidad:",color = androidx.compose.ui.graphics.Color.White)
+
+                    Button(
+                        onClick = { if (cantidadApuesta > 1) cantidadApuesta-- }
+                    ) {
+                        Text("-")
                     }
-                },
-                enabled = monedas > 0 && !partidaFinalizada,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
+
+                    Text("$cantidadApuesta",color = androidx.compose.ui.graphics.Color.White)
+
+                    Button(
+                        onClick = {
+                            if (cantidadApuesta < monedas) cantidadApuesta++
+                        }
+                    ) {
+                        Text("+")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text("Selecciona tus apuestas:",color = androidx.compose.ui.graphics.Color.White)
+
+                ApuestaCheckbox(
+                    "Rojo", TipoApuesta.ROJO, apuestasSeleccionadas,
+                    onCheckedChange = { checked ->
+                        apuestasSeleccionadas =
+                            toggleApuesta(apuestasSeleccionadas, TipoApuesta.ROJO, checked)
+                    }
                 )
-            ) {
-                Text("Retirarse")
-            }
+                ApuestaCheckbox("Negro", TipoApuesta.NEGRO, apuestasSeleccionadas) { checked ->
+                    apuestasSeleccionadas =
+                        toggleApuesta(apuestasSeleccionadas, TipoApuesta.NEGRO, checked)
+                }
 
-            resultado?.let {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Número: ${it.numero}")
-            }
+                ApuestaCheckbox("Par", TipoApuesta.PAR, apuestasSeleccionadas) { checked ->
+                    apuestasSeleccionadas =
+                        toggleApuesta(apuestasSeleccionadas, TipoApuesta.PAR, checked)
+                }
 
-            if (monedas <= 0) {
+                ApuestaCheckbox("Impar", TipoApuesta.IMPAR, apuestasSeleccionadas) { checked ->
+                    apuestasSeleccionadas =
+                        toggleApuesta(apuestasSeleccionadas, TipoApuesta.IMPAR, checked)
+                }
+
+                ApuestaCheckbox(
+                    "Passe (19-36)",
+                    TipoApuesta.PASSE,
+                    apuestasSeleccionadas
+                ) { checked ->
+                    apuestasSeleccionadas =
+                        toggleApuesta(apuestasSeleccionadas, TipoApuesta.PASSE, checked)
+                }
+
+                ApuestaCheckbox(
+                    "Manque (1-18)",
+                    TipoApuesta.MANQUE,
+                    apuestasSeleccionadas
+                ) { checked ->
+                    apuestasSeleccionadas =
+                        toggleApuesta(apuestasSeleccionadas, TipoApuesta.MANQUE, checked)
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("❌ Te has quedado sin monedas")
-                partidaFinalizada = true;
+
+                Button(
+                    onClick = {
+                        if (girando) return@Button
+                        if (apuestasSeleccionadas.isEmpty()) return@Button
+                        if (cantidadApuesta > monedas) return@Button
+
+                        // Bloqueamos UI
+                        girando = true
+
+                        // Lanzamos animación + resolución
+                        scope.launch {
+
+                            // Gira entre 3 y 6 vueltas
+                            val vueltas = (3..6).random()
+                            val extra = (0..359).random()
+                            val target = rotation.value + (vueltas * 360f) + extra
+
+                            // Animación
+                            rotation.animateTo(
+                                targetValue = target,
+                                animationSpec = tween(durationMillis = 1500)
+                            )
+
+                            // Pequeña pausa para "efecto"
+                            delay(150)
+
+                            // Calculamos resultado y aplicamos lógica
+                            val nuevoResultado = engine.girar()
+                            resultado = nuevoResultado
+
+                            monedas -= cantidadApuesta
+
+                            apuestasSeleccionadas.forEach { tipo ->
+                                val gano = ApuestaEvaluator.esGanadora(tipo, nuevoResultado)
+                                if (gano) {
+                                    monedas += cantidadApuesta * 2
+                                }
+                            }
+
+                            if (cantidadApuesta > monedas) {
+                                cantidadApuesta = monedas.coerceAtLeast(1)
+                            }
+
+                            if (monedas <= 0) {
+                                partidaFinalizada = true
+                            }
+
+                            // Desbloqueamos UI
+                            girando = false
+                        }
+                    },
+                    enabled = !girando &&
+                            !partidaFinalizada &&
+                            apuestasSeleccionadas.isNotEmpty() &&
+                            monedas >= cantidadApuesta &&
+                            monedas > 0
+                ) {
+                    Text("Girar ruleta",color = androidx.compose.ui.graphics.Color.White)
+                }
+
+                Button(
+                    onClick = {
+                        partidaFinalizada = true
+                        scope.launch(Dispatchers.IO) {
+                            repo.guardarPartida(jugador = jugador, monedasFinales = monedas)
+                        }
+                    },
+                    enabled = monedas > 0 && !partidaFinalizada,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Text( text = "Retirarse" )
+                }
+
+                resultado?.let {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("Número: ${it.numero}")
+                }
+
+                if (monedas <= 0) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("❌ Te has quedado sin monedas")
+                    partidaFinalizada = true;
+                }
             }
         }
+
     }
-
-
 }
