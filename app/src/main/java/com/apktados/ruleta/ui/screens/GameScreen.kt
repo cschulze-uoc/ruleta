@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -24,7 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+//mport androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -44,6 +45,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+
 @Composable
 public fun GameScreen(
     jugador: String,
@@ -54,12 +58,38 @@ public fun GameScreen(
 
     val engine = remember { RuletaEngine() }
 
+    //
+    var betColor by remember { mutableStateOf<TipoApuesta?>(null) }
+    var betParidad by remember { mutableStateOf<TipoApuesta?>(null) }
+    var betMitad by remember { mutableStateOf<TipoApuesta?>(null) }
+
+    var monedasColor by remember { mutableStateOf(0) }
+    var monedasParidad by remember { mutableStateOf(0) }
+    var monedasMitad by remember { mutableStateOf(0) }
+
+    val apuestaTotal = monedasColor + monedasParidad + monedasMitad
+
+    val apuestasValidas =
+        (monedasColor == 0 || betColor != null) &&
+                (monedasParidad == 0 || betParidad != null) &&
+                (monedasMitad == 0 || betMitad != null)
+    //
+
     var monedas by remember { mutableStateOf(3) }
     var resultado by remember { mutableStateOf<ResultadoRuleta?>(null) }
-    var cantidadApuesta by remember { mutableStateOf(1) }
-    var apuestasSeleccionadas by remember {
+    //var cantidadApuesta by remember { mutableStateOf(1) }
+    /*var apuestasSeleccionadas by remember {
         mutableStateOf(setOf<TipoApuesta>())
-    }
+    }*/
+    //
+    /*var apuestas by remember {
+        mutableStateOf(
+            mutableMapOf<TipoApuesta, Int>()
+        )
+    }*/
+    //val totalApostado = apuestas.values.sum()
+    //
+
     var partidaFinalizada by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -111,6 +141,7 @@ public fun GameScreen(
 
                 Text("Jugador: $jugador",color = androidx.compose.ui.graphics.Color.White)
                 Text("Monedas: $monedas",color = androidx.compose.ui.graphics.Color.White)
+                Text("Apostado: $apuestaTotal",color = androidx.compose.ui.graphics.Color.White)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -131,7 +162,7 @@ public fun GameScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // 🔹 SELECTOR DE CANTIDAD
-                Row(
+                /*Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -152,11 +183,137 @@ public fun GameScreen(
                     ) {
                         Text("+")
                     }
-                }
+                }*/
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Selecciona tus apuestas:",color = androidx.compose.ui.graphics.Color.White)
+                //
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            betColor =
+                                if (betColor == TipoApuesta.ROJO) null
+                                else TipoApuesta.ROJO
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor =
+                                if (betColor == TipoApuesta.ROJO)
+                                    Color.Red
+                                else
+                                    MaterialTheme.colorScheme.secondary
+                        )
+                    ) { Text("Rojo") }
+                    Button(
+                        onClick = {
+                            betColor =
+                                if (betColor == TipoApuesta.NEGRO) null
+                                else TipoApuesta.NEGRO
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor =
+                                if (betColor == TipoApuesta.NEGRO)
+                                    Color.Red
+                                else
+                                    MaterialTheme.colorScheme.secondary
+                        )
+                    ) { Text("Negro") }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Button(onClick = {
+                        if (monedasColor > 0) monedasColor--
+                    }) { Text("-") }
+                    Text("$monedasColor", color = androidx.compose.ui.graphics.Color.White)
+                    Button(onClick = {
+                        if (apuestaTotal < monedas) monedasColor++
+                    }) { Text("+") }
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            betParidad =
+                                if (betParidad == TipoApuesta.PAR) null
+                                else TipoApuesta.PAR
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor =
+                                if (betParidad == TipoApuesta.PAR)
+                                    Color.Red
+                                else
+                                    MaterialTheme.colorScheme.secondary
+                        )
+                    ) { Text("Par") }
+                    Button(
+                        onClick = {
+                            betParidad =
+                                if (betParidad == TipoApuesta.IMPAR) null
+                                else TipoApuesta.IMPAR
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor =
+                                if (betParidad == TipoApuesta.IMPAR)
+                                    Color.Red
+                                else
+                                    MaterialTheme.colorScheme.secondary
+                        )
+                    ) { Text("Impar") }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Button(onClick = {
+                        if (monedasParidad > 0) monedasParidad--
+                    }) { Text("-") }
+                    Text("$monedasParidad", color = androidx.compose.ui.graphics.Color.White)
+                    Button(onClick = {
+                        if (apuestaTotal < monedas) monedasParidad++
+                    }) { Text("+") }
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            betMitad =
+                                if (betMitad == TipoApuesta.MANQUE) null
+                                else TipoApuesta.MANQUE
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor =
+                                if (betMitad == TipoApuesta.MANQUE)
+                                    Color.Red
+                                else
+                                    MaterialTheme.colorScheme.secondary
+                        )
+                    ) { Text("Manque") }
+                    Button(
+                        onClick = {
+                            betMitad =
+                                if (betMitad == TipoApuesta.PASSE) null
+                                else TipoApuesta.PASSE
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor =
+                                if (betMitad == TipoApuesta.PASSE)
+                                    Color.Red
+                                else
+                                    MaterialTheme.colorScheme.secondary
+                        )
+                    ) { Text("Passe") }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Button(onClick = {
+                        if (monedasMitad > 0) monedasMitad--
+                    }) { Text("-") }
+                    Text("$monedasMitad", color = androidx.compose.ui.graphics.Color.White)
+                    Button(onClick = {
+                        if (apuestaTotal < monedas) monedasMitad++
+                    }) { Text("+") }
+                }
+                //
+
+                /*Text("Selecciona tus apuestas:",color = androidx.compose.ui.graphics.Color.White)
 
                 ApuestaCheckbox(
                     "Rojo", TipoApuesta.ROJO, apuestasSeleccionadas,
@@ -196,15 +353,19 @@ public fun GameScreen(
                 ) { checked ->
                     apuestasSeleccionadas =
                         toggleApuesta(apuestasSeleccionadas, TipoApuesta.MANQUE, checked)
-                }
+                }*/
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = {
                         if (girando) return@Button
-                        if (apuestasSeleccionadas.isEmpty()) return@Button
-                        if (cantidadApuesta > monedas) return@Button
+                        /*if (apuestasSeleccionadas.isEmpty()) return@Button
+                        if (cantidadApuesta > monedas) return@Button*/
+
+                        if (!apuestasValidas) return@Button
+                        if (apuestaTotal == 0) return@Button
+                        if(apuestaTotal > monedas) return@Button
 
                         // Bloqueamos UI
                         girando = true
@@ -230,18 +391,47 @@ public fun GameScreen(
                             val nuevoResultado = engine.girar()
                             resultado = nuevoResultado
 
-                            monedas -= cantidadApuesta
+                            /*monedas -= cantidadApuesta
 
                             apuestasSeleccionadas.forEach { tipo ->
                                 val gano = ApuestaEvaluator.esGanadora(tipo, nuevoResultado)
                                 if (gano) {
                                     monedas += cantidadApuesta * 2
                                 }
-                            }
+                            }*/
+                            //
+                            //val totalApostado = apuestas.values.sum()
+                            monedas -= apuestaTotal
 
-                            if (cantidadApuesta > monedas) {
-                                cantidadApuesta = monedas.coerceAtLeast(1)
+                            /*apuestas.forEach { (tipo, cantidad) ->
+                                val gano = ApuestaEvaluator.esGanadora(tipo, nuevoResultado)
+                                if (gano) {
+                                    monedas += cantidad * 2
+                                }
+                            }*/
+
+
+
+                            betColor?.let {
+                                if (ApuestaEvaluator.esGanadora(it, nuevoResultado)) {
+                                    monedas += monedasColor * 2
+                                }
                             }
+                            betParidad?.let {
+                                if (ApuestaEvaluator.esGanadora(it, nuevoResultado)) {
+                                    monedas += monedasParidad * 2
+                                }
+                            }
+                            betMitad?.let {
+                                if (ApuestaEvaluator.esGanadora(it, nuevoResultado)) {
+                                    monedas += monedasMitad * 2
+                                }
+                            }
+                            //
+
+                            /*if (cantidadApuesta > monedas) {
+                                cantidadApuesta = monedas.coerceAtLeast(1)
+                            }*/
 
                             if (monedas <= 0) {
                                 partidaFinalizada = true
@@ -251,11 +441,17 @@ public fun GameScreen(
                             girando = false
                         }
                     },
-                    enabled = !girando &&
+                    /*enabled = !girando &&
                             !partidaFinalizada &&
                             apuestasSeleccionadas.isNotEmpty() &&
                             monedas >= cantidadApuesta &&
-                            monedas > 0
+                            monedas > 0*/
+
+                    enabled = !girando &&
+                            !partidaFinalizada &&
+                            apuestaTotal > 0 &&
+                            apuestaTotal <= monedas &&
+                            apuestasValidas
                 ) {
                     Text("Girar ruleta",color = androidx.compose.ui.graphics.Color.White)
                 }
@@ -276,8 +472,30 @@ public fun GameScreen(
                 }
 
                 resultado?.let {
+
+                    val color = if (ApuestaEvaluator.esGanadora(TipoApuesta.ROJO, it))
+                        "rojo"
+                    else if (ApuestaEvaluator.esGanadora(TipoApuesta.NEGRO, it))
+                        "negro"
+                    else
+                        "verde"
+
+                    val paridad = if (ApuestaEvaluator.esGanadora(TipoApuesta.PAR, it))
+                        "par"
+                    else
+                        "impar"
+
+                    val mitad = if (ApuestaEvaluator.esGanadora(TipoApuesta.PASSE, it))
+                        "passe"
+                    else
+                        "manque"
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("Número: ${it.numero}")
+                    Text(
+                        text = "Resultado: ${it.numero} ($color, $paridad, $mitad)",
+                        color = androidx.compose.ui.graphics.Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
 
                 if (monedas <= 0) {
