@@ -1,5 +1,6 @@
 package com.apktados.ruleta.ui.screens
 
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -27,7 +28,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-//mport androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -35,14 +35,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.apktados.ruleta.ui.components.ApuestaCheckbox
 import com.apktados.ruleta.R
 import com.apktados.ruleta.game.ApuestaEvaluator
 import com.apktados.ruleta.game.ResultadoRuleta
 import com.apktados.ruleta.game.RuletaEngine
 import com.apktados.ruleta.game.TipoApuesta
-import com.apktados.ruleta.ui.components.toggleApuesta
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.rememberScrollState
@@ -51,6 +48,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.runtime.DisposableEffect
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 @Composable
 public fun GameScreen(
@@ -93,6 +94,13 @@ public fun GameScreen(
     }*/
     //val totalApostado = apuestas.values.sum()
     //
+
+    val disposables = remember { CompositeDisposable() }
+    DisposableEffect(Unit) {
+        onDispose {
+            disposables.clear()
+        }
+    }
 
     var partidaFinalizada by remember { mutableStateOf(false) }
 
@@ -239,31 +247,7 @@ public fun GameScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // 🔹 SELECTOR DE CANTIDAD
-                    /*Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text("Cantidad:",color = androidx.compose.ui.graphics.Color.White)
-
-                        Button(
-                            onClick = { if (cantidadApuesta > 1) cantidadApuesta-- }
-                        ) {
-                            Text("-")
-                        }
-
-                        Text("$cantidadApuesta",color = androidx.compose.ui.graphics.Color.White)
-
-                        Button(
-                            onClick = {
-                                if (cantidadApuesta < monedas) cantidadApuesta++
-                            }
-                        ) {
-                            Text("+")
-                        }
-                    }*/
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                    // Spacer(modifier = Modifier.height(16.dp))
 
                     Box(
                         modifier = Modifier
@@ -540,24 +524,7 @@ public fun GameScreen(
                                         val nuevoResultado = engine.girar()
                                         resultado = nuevoResultado
 
-                                        /*monedas -= cantidadApuesta
-
-                                        apuestasSeleccionadas.forEach { tipo ->
-                                            val gano = ApuestaEvaluator.esGanadora(tipo, nuevoResultado)
-                                            if (gano) {
-                                                monedas += cantidadApuesta * 2
-                                            }
-                                        }*/
-                                        //
-                                        //val totalApostado = apuestas.values.sum()
                                         monedas -= apuestaTotal
-
-                                        /*apuestas.forEach { (tipo, cantidad) ->
-                                            val gano = ApuestaEvaluator.esGanadora(tipo, nuevoResultado)
-                                            if (gano) {
-                                                monedas += cantidad * 2
-                                            }
-                                        }*/
 
                                         betColor?.let {
                                             if (ApuestaEvaluator.esGanadora(it, nuevoResultado)) {
@@ -574,25 +541,14 @@ public fun GameScreen(
                                                 monedas += monedasMitad * 2
                                             }
                                         }
-                                        //
-
-                                        /*if (cantidadApuesta > monedas) {
-                                            cantidadApuesta = monedas.coerceAtLeast(1)
-                                        }*/
 
                                         if (monedas <= 0) {
                                             partidaFinalizada = true
                                         }
 
-                                        // Desbloqueamos UI
                                         girando = false
                                     }
                                 },
-                                /*enabled = !girando &&
-                                        !partidaFinalizada &&
-                                        apuestasSeleccionadas.isNotEmpty() &&
-                                        monedas >= cantidadApuesta &&
-                                        monedas > 0*/
 
                                 enabled = !girando &&
                                         !partidaFinalizada &&
@@ -613,9 +569,18 @@ public fun GameScreen(
                             Button(
                                 onClick = {
                                     partidaFinalizada = true
-                                    scope.launch(Dispatchers.IO) {
-                                        repo.guardarPartida(jugador = jugador, monedasFinales = monedas)
-                                    }
+                                    val disposable =
+                                        repo.guardarPartida(
+                                        jugador = jugador,
+                                        monedasFinales = monedas
+                                    )
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(
+                                            { println("Partida guardada") },
+                                            { error -> Log.e("DB", "Error guardando partida", error) }
+                                        )
+                                    disposables.add(disposable)
                                 },
                                 enabled = monedas > 0 && !partidaFinalizada,
                                 modifier = Modifier.fillMaxWidth(),
@@ -629,49 +594,6 @@ public fun GameScreen(
                             }
                         }
                     }
-
-                    /*Text("Selecciona tus apuestas:",color = androidx.compose.ui.graphics.Color.White)
-
-                    ApuestaCheckbox(
-                        "Rojo", TipoApuesta.ROJO, apuestasSeleccionadas,
-                        onCheckedChange = { checked ->
-                            apuestasSeleccionadas =
-                                toggleApuesta(apuestasSeleccionadas, TipoApuesta.ROJO, checked)
-                        }
-                    )
-                    ApuestaCheckbox("Negro", TipoApuesta.NEGRO, apuestasSeleccionadas) { checked ->
-                        apuestasSeleccionadas =
-                            toggleApuesta(apuestasSeleccionadas, TipoApuesta.NEGRO, checked)
-                    }
-
-                    ApuestaCheckbox("Par", TipoApuesta.PAR, apuestasSeleccionadas) { checked ->
-                        apuestasSeleccionadas =
-                            toggleApuesta(apuestasSeleccionadas, TipoApuesta.PAR, checked)
-                    }
-
-                    ApuestaCheckbox("Impar", TipoApuesta.IMPAR, apuestasSeleccionadas) { checked ->
-                        apuestasSeleccionadas =
-                            toggleApuesta(apuestasSeleccionadas, TipoApuesta.IMPAR, checked)
-                    }
-
-                    ApuestaCheckbox(
-                        "Passe (19-36)",
-                        TipoApuesta.PASSE,
-                        apuestasSeleccionadas
-                    ) { checked ->
-                        apuestasSeleccionadas =
-                            toggleApuesta(apuestasSeleccionadas, TipoApuesta.PASSE, checked)
-                    }
-
-                    ApuestaCheckbox(
-                        "Manque (1-18)",
-                        TipoApuesta.MANQUE,
-                        apuestasSeleccionadas
-                    ) { checked ->
-                        apuestasSeleccionadas =
-                            toggleApuesta(apuestasSeleccionadas, TipoApuesta.MANQUE, checked)
-                    }*/
-
                     Spacer(modifier = Modifier.height(16.dp))
 
                     resultado?.let {
@@ -720,7 +642,7 @@ public fun GameScreen(
                     if (monedas <= 0) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text("❌ Te has quedado sin monedas", color = Color.White)
-                        partidaFinalizada = true;
+                        partidaFinalizada = true
                     }
                 }
             }

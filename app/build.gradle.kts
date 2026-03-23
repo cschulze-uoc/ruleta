@@ -56,4 +56,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    implementation("io.reactivex.rxjava3:rxjava:3.1.12")
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
+
 }

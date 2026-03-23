@@ -4,27 +4,12 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,8 +22,9 @@ import androidx.navigation.NavController
 import com.apktados.ruleta.R
 import com.apktados.ruleta.data.Partida
 import com.apktados.ruleta.data.PartidasRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -52,22 +38,36 @@ fun HistoryScreen(navController: NavController) {
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
 
+    val disposables = remember { CompositeDisposable() }
+
     val gold = Color(0xFFFFD700)
     val darkOverlay = Color(0xCC111111)
     val buttonRed = Color(0xFFC00000)
 
-    LaunchedEffect(Unit) {
+    // 🔥 RxJava en lugar de coroutines
+    DisposableEffect(Unit) {
+
         loading = true
         error = null
-        try {
-            val data = withContext(Dispatchers.IO) {
-                repo.historial()
-            }
-            items = data
-        } catch (e: Exception) {
-            error = e.message ?: "Error leyendo historial"
-        } finally {
-            loading = false
+
+        val disposable = repo.historial()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { data ->
+                    items = data
+                    loading = false
+                },
+                { e ->
+                    error = e.message ?: "Error leyendo historial"
+                    loading = false
+                }
+            )
+
+        disposables.add(disposable)
+
+        onDispose {
+            disposables.clear()
         }
     }
 
@@ -120,18 +120,12 @@ fun HistoryScreen(navController: NavController) {
                     ),
                     border = BorderStroke(2.dp, gold)
                 ) {
-                    Text(
-                        text = "Volver",
-                        fontWeight = FontWeight.Bold
-                    )
+                    Text("Volver", fontWeight = FontWeight.Bold)
                 }
 
                 when {
                     loading -> {
-                        Text(
-                            text = "Cargando historial...",
-                            color = Color.White
-                        )
+                        Text("Cargando historial...", color = Color.White)
                     }
 
                     error != null -> {
@@ -144,10 +138,7 @@ fun HistoryScreen(navController: NavController) {
                                 )
                                 .padding(16.dp)
                         ) {
-                            Text(
-                                text = "Error: $error",
-                                color = Color.Red
-                            )
+                            Text("Error: $error", color = Color.Red)
                         }
                     }
 
@@ -162,7 +153,7 @@ fun HistoryScreen(navController: NavController) {
                                 .padding(16.dp)
                         ) {
                             Text(
-                                text = "Aún no hay partidas guardadas.",
+                                "Aún no hay partidas guardadas.",
                                 color = Color.White
                             )
                         }
@@ -181,10 +172,7 @@ fun HistoryScreen(navController: NavController) {
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             items(items) { partida ->
-                                PartidaRow(
-                                    p = partida,
-                                    gold = gold
-                                )
+                                PartidaRow(p = partida, gold = gold)
                             }
                         }
                     }

@@ -4,8 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,8 +38,9 @@ import androidx.compose.ui.unit.dp
 import com.apktados.ruleta.R
 import com.apktados.ruleta.data.Partida
 import com.apktados.ruleta.data.PartidasRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 @Composable
 fun HomeScreen(
@@ -56,17 +55,35 @@ fun HomeScreen(
     var top3 by remember { mutableStateOf<List<Partida>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
 
-    LaunchedEffect(Unit) {
+
+    val disposables = remember { CompositeDisposable() }
+
+    DisposableEffect(Unit) {
+
         loading = true
-        top3 = withContext(Dispatchers.IO) {
-            repo.top10().take(3)
+
+        val disposable = repo.top10()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { lista ->
+                    top3 = lista.take(3)
+                    loading = false
+                },
+                { error ->
+                    error.printStackTrace()
+                    loading = false
+                }
+            )
+            disposables.add(disposable)
+            onDispose {
+                disposables.clear()
+            }
         }
-        loading = false
-    }
+
 
     val gold = Color(0xFFFFD700)
     val darkOverlay = Color(0xCC111111)
-    val buttonRed = Color(0xFF8B0000)
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -154,7 +171,7 @@ fun HomeScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     shape = RoundedCornerShape(18.dp),
-                    border = androidx.compose.foundation.BorderStroke(2.dp, gold),
+                    border = BorderStroke(2.dp, gold),
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = gold
                     )
