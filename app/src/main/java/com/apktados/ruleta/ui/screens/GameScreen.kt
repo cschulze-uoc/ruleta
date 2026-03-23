@@ -81,22 +81,9 @@ public fun GameScreen(
         (monedasColor == 0 || betColor != null) &&
                 (monedasParidad == 0 || betParidad != null) &&
                 (monedasMitad == 0 || betMitad != null)
-    //
 
     var monedas by remember { mutableStateOf(3) }
     var resultado by remember { mutableStateOf<ResultadoRuleta?>(null) }
-    //var cantidadApuesta by remember { mutableStateOf(1) }
-    /*var apuestasSeleccionadas by remember {
-        mutableStateOf(setOf<TipoApuesta>())
-    }*/
-    //
-    /*var apuestas by remember {
-        mutableStateOf(
-            mutableMapOf<TipoApuesta, Int>()
-        )
-    }*/
-    //val totalApostado = apuestas.values.sum()
-    //
 
     val disposables = remember { CompositeDisposable() }
     DisposableEffect(Unit) {
@@ -123,7 +110,7 @@ public fun GameScreen(
         modifier = Modifier.fillMaxSize()
     ) {
 
-        // 🔹 Imagen de fondo
+        // Imagen de fondo
         Image(
             painter = painterResource(id = R.drawable.fondo_casino),
             contentDescription = null,
