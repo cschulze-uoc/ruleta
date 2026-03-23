@@ -3,6 +3,8 @@ package com.apktados.ruleta.ui.screens
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -24,7 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+//mport androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -44,6 +47,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.BorderStroke
+
 @Composable
 public fun GameScreen(
     jugador: String,
@@ -54,17 +62,51 @@ public fun GameScreen(
 
     val engine = remember { RuletaEngine() }
 
+    //
+    var betColor by remember { mutableStateOf<TipoApuesta?>(null) }
+    var betParidad by remember { mutableStateOf<TipoApuesta?>(null) }
+    var betMitad by remember { mutableStateOf<TipoApuesta?>(null) }
+
+    var monedasColor by remember { mutableStateOf(0) }
+    var monedasParidad by remember { mutableStateOf(0) }
+    var monedasMitad by remember { mutableStateOf(0) }
+
+    val apuestaTotal = monedasColor + monedasParidad + monedasMitad
+
+    val apuestasValidas =
+        (monedasColor == 0 || betColor != null) &&
+                (monedasParidad == 0 || betParidad != null) &&
+                (monedasMitad == 0 || betMitad != null)
+    //
+
     var monedas by remember { mutableStateOf(3) }
     var resultado by remember { mutableStateOf<ResultadoRuleta?>(null) }
-    var cantidadApuesta by remember { mutableStateOf(1) }
-    var apuestasSeleccionadas by remember {
+    //var cantidadApuesta by remember { mutableStateOf(1) }
+    /*var apuestasSeleccionadas by remember {
         mutableStateOf(setOf<TipoApuesta>())
-    }
+    }*/
+    //
+    /*var apuestas by remember {
+        mutableStateOf(
+            mutableMapOf<TipoApuesta, Int>()
+        )
+    }*/
+    //val totalApostado = apuestas.values.sum()
+    //
+
     var partidaFinalizada by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val repo = remember { com.apktados.ruleta.data.PartidasRepository(context) }
     val scope = rememberCoroutineScope()
+
+    val gold = Color(0xFFFFD700)
+    val darkPanel = Color(0xB3000000)
+    val panelInside = Color(0x99000000)
+    val selectedRed = Color(0xFFC00000)
+    val casinoGreen = Color(0xFF2E7D32)
+    val casinoGreenDark = Color(0xFF1B5E20)
+    val casinoBrown = Color(0xFF6D4C41)
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -79,214 +121,609 @@ public fun GameScreen(
         )
 
         if (partidaFinalizada) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Card {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0x88000000)),
+                contentAlignment = Alignment.Center
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    shape = RoundedCornerShape(24.dp)
                 ) {
-                    Text("🏁 Partida finalizada",color = androidx.compose.ui.graphics.Color.White)
-                    Text("Monedas finales: $monedas",color = androidx.compose.ui.graphics.Color.White)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(darkPanel)
+                            .border(
+                                BorderStroke(2.dp, gold),
+                                RoundedCornerShape(24.dp)
+                            )
+                            .padding(24.dp)
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                "PARTIDA FINALIZADA",
+                                color = gold,
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            Text(
+                                "Monedas finales: $monedas",
+                                color = Color.White,
+                                style = MaterialTheme.typography.titleMedium
+                            )
 
-                    Button(
-                        onClick = {
-                            navController.navigate("home") {
-                                popUpTo("home") { inclusive = true }
+                            Button(
+                                onClick = {
+                                    navController.navigate("home") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                },
+                                shape = RoundedCornerShape(18.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = selectedRed,
+                                    contentColor = Color.White
+                                ),
+                                border = BorderStroke(2.dp, gold)
+                            ) {
+                                Text("Volver al menú", fontWeight = FontWeight.Bold)
                             }
                         }
-                    ) {
-                        Text("Volver al menú")
                     }
                 }
             }
         } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
-
-                Text("Jugador: $jugador",color = androidx.compose.ui.graphics.Color.White)
-                Text("Monedas: $monedas",color = androidx.compose.ui.graphics.Color.White)
-                Box(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(220.dp),
-                    contentAlignment = Alignment.Center
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ruleta),
-                        contentDescription = "Ruleta",
+
+                    Box(
                         modifier = Modifier
-                            .size(200.dp)
-                            .graphicsLayer(rotationZ = rotation.value)
-                    )
-                }
-                if (girando) {
-                    Text("Girando…")
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // 🔹 SELECTOR DE CANTIDAD
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text("Cantidad:",color = androidx.compose.ui.graphics.Color.White)
-
-                    Button(
-                        onClick = { if (cantidadApuesta > 1) cantidadApuesta-- }
+                            .fillMaxWidth()
+                            .background(
+                                color = darkPanel,
+                                shape = RoundedCornerShape(20.dp)
+                            )
+                            .border(
+                                width = 2.dp,
+                                color = gold.copy(alpha = 0.75f),
+                                shape = RoundedCornerShape(20.dp)
+                            )
+                            .padding(16.dp)
                     ) {
-                        Text("-")
-                    }
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text("Jugador: $jugador", color = Color.White, fontWeight = FontWeight.Bold)
+                            Text("Monedas: $monedas", color = Color.White)
+                            Text("Apostado: $apuestaTotal", color = Color.White)
 
-                    Text("$cantidadApuesta",color = androidx.compose.ui.graphics.Color.White)
-
-                    Button(
-                        onClick = {
-                            if (cantidadApuesta < monedas) cantidadApuesta++
+                            if (girando) {
+                                Text(
+                                    "Girando…",
+                                    color = gold,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(220.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text("+")
+                        Image(
+                            painter = painterResource(id = R.drawable.ruleta2),
+                            contentDescription = "Ruleta",
+                            modifier = Modifier
+                                .size(200.dp)
+                                .graphicsLayer(rotationZ = rotation.value)
+                        )
                     }
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Text("Selecciona tus apuestas:",color = androidx.compose.ui.graphics.Color.White)
+                    // 🔹 SELECTOR DE CANTIDAD
+                    /*Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text("Cantidad:",color = androidx.compose.ui.graphics.Color.White)
 
-                ApuestaCheckbox(
-                    "Rojo", TipoApuesta.ROJO, apuestasSeleccionadas,
-                    onCheckedChange = { checked ->
-                        apuestasSeleccionadas =
-                            toggleApuesta(apuestasSeleccionadas, TipoApuesta.ROJO, checked)
-                    }
-                )
-                ApuestaCheckbox("Negro", TipoApuesta.NEGRO, apuestasSeleccionadas) { checked ->
-                    apuestasSeleccionadas =
-                        toggleApuesta(apuestasSeleccionadas, TipoApuesta.NEGRO, checked)
-                }
+                        Button(
+                            onClick = { if (cantidadApuesta > 1) cantidadApuesta-- }
+                        ) {
+                            Text("-")
+                        }
 
-                ApuestaCheckbox("Par", TipoApuesta.PAR, apuestasSeleccionadas) { checked ->
-                    apuestasSeleccionadas =
-                        toggleApuesta(apuestasSeleccionadas, TipoApuesta.PAR, checked)
-                }
+                        Text("$cantidadApuesta",color = androidx.compose.ui.graphics.Color.White)
 
-                ApuestaCheckbox("Impar", TipoApuesta.IMPAR, apuestasSeleccionadas) { checked ->
-                    apuestasSeleccionadas =
-                        toggleApuesta(apuestasSeleccionadas, TipoApuesta.IMPAR, checked)
-                }
+                        Button(
+                            onClick = {
+                                if (cantidadApuesta < monedas) cantidadApuesta++
+                            }
+                        ) {
+                            Text("+")
+                        }
+                    }*/
 
-                ApuestaCheckbox(
-                    "Passe (19-36)",
-                    TipoApuesta.PASSE,
-                    apuestasSeleccionadas
-                ) { checked ->
-                    apuestasSeleccionadas =
-                        toggleApuesta(apuestasSeleccionadas, TipoApuesta.PASSE, checked)
-                }
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                ApuestaCheckbox(
-                    "Manque (1-18)",
-                    TipoApuesta.MANQUE,
-                    apuestasSeleccionadas
-                ) { checked ->
-                    apuestasSeleccionadas =
-                        toggleApuesta(apuestasSeleccionadas, TipoApuesta.MANQUE, checked)
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = {
-                        if (girando) return@Button
-                        if (apuestasSeleccionadas.isEmpty()) return@Button
-                        if (cantidadApuesta > monedas) return@Button
-
-                        // Bloqueamos UI
-                        girando = true
-
-                        // Lanzamos animación + resolución
-                        scope.launch {
-
-                            // Gira entre 3 y 6 vueltas
-                            val vueltas = (3..6).random()
-                            val extra = (0..359).random()
-                            val target = rotation.value + (vueltas * 360f) + extra
-
-                            // Animación
-                            rotation.animateTo(
-                                targetValue = target,
-                                animationSpec = tween(durationMillis = 1500)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = darkPanel,
+                                shape = RoundedCornerShape(20.dp)
+                            )
+                            .border(
+                                width = 2.dp,
+                                color = gold.copy(alpha = 0.75f),
+                                shape = RoundedCornerShape(20.dp)
+                            )
+                            .padding(16.dp)
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Text(
+                                "APUESTAS",
+                                color = gold,
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.titleMedium
                             )
 
-                            // Pequeña pausa para "efecto"
-                            delay(150)
+                            Text(
+                                "Color",
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold
+                            )
 
-                            // Calculamos resultado y aplicamos lógica
-                            val nuevoResultado = engine.girar()
-                            resultado = nuevoResultado
+                            //
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Button(
+                                    onClick = {
+                                        betColor =
+                                            if (betColor == TipoApuesta.ROJO) null
+                                            else TipoApuesta.ROJO
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor =
+                                            if (betColor == TipoApuesta.ROJO)
+                                                selectedRed
+                                            else
+                                                casinoGreen,
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(16.dp)
+                                ) { Text("Rojo") }
 
-                            monedas -= cantidadApuesta
+                                Button(
+                                    onClick = {
+                                        betColor =
+                                            if (betColor == TipoApuesta.NEGRO) null
+                                            else TipoApuesta.NEGRO
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor =
+                                            if (betColor == TipoApuesta.NEGRO)
+                                                Color.Black
+                                            else
+                                                casinoGreen,
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(16.dp)
+                                ) { Text("Negro") }
 
-                            apuestasSeleccionadas.forEach { tipo ->
-                                val gano = ApuestaEvaluator.esGanadora(tipo, nuevoResultado)
-                                if (gano) {
-                                    monedas += cantidadApuesta * 2
-                                }
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                Button(
+                                    onClick = {
+                                        if (monedasColor > 0) monedasColor--
+                                    },
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = casinoBrown,
+                                        contentColor = Color.White
+                                    )
+                                ) { Text("-") }
+
+                                Text("$monedasColor", color = Color.White, fontWeight = FontWeight.Bold)
+
+                                Button(
+                                    onClick = {
+                                        if (apuestaTotal < monedas) monedasColor++
+                                    },
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = casinoBrown,
+                                        contentColor = Color.White
+                                    )
+                                ) { Text("+") }
                             }
 
-                            if (cantidadApuesta > monedas) {
-                                cantidadApuesta = monedas.coerceAtLeast(1)
+                            Text(
+                                "Paridad",
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold
+                            )
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Button(
+                                    onClick = {
+                                        betParidad =
+                                            if (betParidad == TipoApuesta.PAR) null
+                                            else TipoApuesta.PAR
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor =
+                                            if (betParidad == TipoApuesta.PAR)
+                                                selectedRed
+                                            else
+                                                casinoGreen,
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(16.dp)
+                                ) { Text("Par") }
+
+                                Button(
+                                    onClick = {
+                                        betParidad =
+                                            if (betParidad == TipoApuesta.IMPAR) null
+                                            else TipoApuesta.IMPAR
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor =
+                                            if (betParidad == TipoApuesta.IMPAR)
+                                                selectedRed
+                                            else
+                                                casinoGreen,
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(16.dp)
+                                ) { Text("Impar") }
+
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                Button(
+                                    onClick = {
+                                        if (monedasParidad > 0) monedasParidad--
+                                    },
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = casinoBrown,
+                                        contentColor = Color.White
+                                    )
+                                ) { Text("-") }
+
+                                Text("$monedasParidad", color = Color.White, fontWeight = FontWeight.Bold)
+
+                                Button(
+                                    onClick = {
+                                        if (apuestaTotal < monedas) monedasParidad++
+                                    },
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = casinoBrown,
+                                        contentColor = Color.White
+                                    )
+                                ) { Text("+") }
                             }
 
-                            if (monedas <= 0) {
-                                partidaFinalizada = true
+                            Text(
+                                "Mitad",
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold
+                            )
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Button(
+                                    onClick = {
+                                        betMitad =
+                                            if (betMitad == TipoApuesta.MANQUE) null
+                                            else TipoApuesta.MANQUE
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor =
+                                            if (betMitad == TipoApuesta.MANQUE)
+                                                selectedRed
+                                            else
+                                                casinoGreen,
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(16.dp)
+                                ) { Text("Manque") }
+
+                                Button(
+                                    onClick = {
+                                        betMitad =
+                                            if (betMitad == TipoApuesta.PASSE) null
+                                            else TipoApuesta.PASSE
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor =
+                                            if (betMitad == TipoApuesta.PASSE)
+                                                selectedRed
+                                            else
+                                                casinoGreen,
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(16.dp)
+                                ) { Text("Passe") }
+
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                Button(
+                                    onClick = {
+                                        if (monedasMitad > 0) monedasMitad--
+                                    },
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = casinoBrown,
+                                        contentColor = Color.White
+                                    )
+                                ) { Text("-") }
+
+                                Text("$monedasMitad", color = Color.White, fontWeight = FontWeight.Bold)
+
+                                Button(
+                                    onClick = {
+                                        if (apuestaTotal < monedas) monedasMitad++
+                                    },
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = casinoBrown,
+                                        contentColor = Color.White
+                                    )
+                                ) { Text("+") }
+                            }
+                            //
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Button(
+                                onClick = {
+                                    if (girando) return@Button
+                                    /*if (apuestasSeleccionadas.isEmpty()) return@Button
+                                    if (cantidadApuesta > monedas) return@Button*/
+
+                                    if (!apuestasValidas) return@Button
+                                    if (apuestaTotal == 0) return@Button
+                                    if (apuestaTotal > monedas) return@Button
+
+                                    // Bloqueamos UI
+                                    girando = true
+
+                                    // Lanzamos animación + resolución
+                                    scope.launch {
+
+                                        // Gira entre 3 y 6 vueltas
+                                        val vueltas = (3..6).random()
+                                        val extra = (0..359).random()
+                                        val target = rotation.value + (vueltas * 360f) + extra
+
+                                        // Animación
+                                        rotation.animateTo(
+                                            targetValue = target,
+                                            animationSpec = tween(durationMillis = 1500)
+                                        )
+
+                                        // Pequeña pausa para "efecto"
+                                        delay(150)
+
+                                        // Calculamos resultado y aplicamos lógica
+                                        val nuevoResultado = engine.girar()
+                                        resultado = nuevoResultado
+
+                                        /*monedas -= cantidadApuesta
+
+                                        apuestasSeleccionadas.forEach { tipo ->
+                                            val gano = ApuestaEvaluator.esGanadora(tipo, nuevoResultado)
+                                            if (gano) {
+                                                monedas += cantidadApuesta * 2
+                                            }
+                                        }*/
+                                        //
+                                        //val totalApostado = apuestas.values.sum()
+                                        monedas -= apuestaTotal
+
+                                        /*apuestas.forEach { (tipo, cantidad) ->
+                                            val gano = ApuestaEvaluator.esGanadora(tipo, nuevoResultado)
+                                            if (gano) {
+                                                monedas += cantidad * 2
+                                            }
+                                        }*/
+
+                                        betColor?.let {
+                                            if (ApuestaEvaluator.esGanadora(it, nuevoResultado)) {
+                                                monedas += monedasColor * 2
+                                            }
+                                        }
+                                        betParidad?.let {
+                                            if (ApuestaEvaluator.esGanadora(it, nuevoResultado)) {
+                                                monedas += monedasParidad * 2
+                                            }
+                                        }
+                                        betMitad?.let {
+                                            if (ApuestaEvaluator.esGanadora(it, nuevoResultado)) {
+                                                monedas += monedasMitad * 2
+                                            }
+                                        }
+                                        //
+
+                                        /*if (cantidadApuesta > monedas) {
+                                            cantidadApuesta = monedas.coerceAtLeast(1)
+                                        }*/
+
+                                        if (monedas <= 0) {
+                                            partidaFinalizada = true
+                                        }
+
+                                        // Desbloqueamos UI
+                                        girando = false
+                                    }
+                                },
+                                /*enabled = !girando &&
+                                        !partidaFinalizada &&
+                                        apuestasSeleccionadas.isNotEmpty() &&
+                                        monedas >= cantidadApuesta &&
+                                        monedas > 0*/
+
+                                enabled = !girando &&
+                                        !partidaFinalizada &&
+                                        apuestaTotal > 0 &&
+                                        apuestaTotal <= monedas &&
+                                        apuestasValidas,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(18.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = selectedRed,
+                                    contentColor = Color.White
+                                ),
+                                border = BorderStroke(2.dp, gold)
+                            ) {
+                                Text("Girar ruleta", color = Color.White, fontWeight = FontWeight.Bold)
                             }
 
-                            // Desbloqueamos UI
-                            girando = false
+                            Button(
+                                onClick = {
+                                    partidaFinalizada = true
+                                    scope.launch(Dispatchers.IO) {
+                                        repo.guardarPartida(jugador = jugador, monedasFinales = monedas)
+                                    }
+                                },
+                                enabled = monedas > 0 && !partidaFinalizada,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(18.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = casinoGreenDark,
+                                    contentColor = Color.White
+                                )
+                            ) {
+                                Text(text = "Retirarse", fontWeight = FontWeight.Bold)
+                            }
                         }
-                    },
-                    enabled = !girando &&
-                            !partidaFinalizada &&
-                            apuestasSeleccionadas.isNotEmpty() &&
-                            monedas >= cantidadApuesta &&
-                            monedas > 0
-                ) {
-                    Text("Girar ruleta",color = androidx.compose.ui.graphics.Color.White)
-                }
+                    }
 
-                Button(
-                    onClick = {
-                        partidaFinalizada = true
-                        scope.launch(Dispatchers.IO) {
-                            repo.guardarPartida(jugador = jugador, monedasFinales = monedas)
+                    /*Text("Selecciona tus apuestas:",color = androidx.compose.ui.graphics.Color.White)
+
+                    ApuestaCheckbox(
+                        "Rojo", TipoApuesta.ROJO, apuestasSeleccionadas,
+                        onCheckedChange = { checked ->
+                            apuestasSeleccionadas =
+                                toggleApuesta(apuestasSeleccionadas, TipoApuesta.ROJO, checked)
                         }
-                    },
-                    enabled = monedas > 0 && !partidaFinalizada,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
                     )
-                ) {
-                    Text( text = "Retirarse" )
-                }
+                    ApuestaCheckbox("Negro", TipoApuesta.NEGRO, apuestasSeleccionadas) { checked ->
+                        apuestasSeleccionadas =
+                            toggleApuesta(apuestasSeleccionadas, TipoApuesta.NEGRO, checked)
+                    }
 
-                resultado?.let {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text("Número: ${it.numero}")
-                }
+                    ApuestaCheckbox("Par", TipoApuesta.PAR, apuestasSeleccionadas) { checked ->
+                        apuestasSeleccionadas =
+                            toggleApuesta(apuestasSeleccionadas, TipoApuesta.PAR, checked)
+                    }
 
-                if (monedas <= 0) {
+                    ApuestaCheckbox("Impar", TipoApuesta.IMPAR, apuestasSeleccionadas) { checked ->
+                        apuestasSeleccionadas =
+                            toggleApuesta(apuestasSeleccionadas, TipoApuesta.IMPAR, checked)
+                    }
+
+                    ApuestaCheckbox(
+                        "Passe (19-36)",
+                        TipoApuesta.PASSE,
+                        apuestasSeleccionadas
+                    ) { checked ->
+                        apuestasSeleccionadas =
+                            toggleApuesta(apuestasSeleccionadas, TipoApuesta.PASSE, checked)
+                    }
+
+                    ApuestaCheckbox(
+                        "Manque (1-18)",
+                        TipoApuesta.MANQUE,
+                        apuestasSeleccionadas
+                    ) { checked ->
+                        apuestasSeleccionadas =
+                            toggleApuesta(apuestasSeleccionadas, TipoApuesta.MANQUE, checked)
+                    }*/
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("❌ Te has quedado sin monedas")
-                    partidaFinalizada = true;
+
+                    resultado?.let {
+
+                        val color = if (ApuestaEvaluator.esGanadora(TipoApuesta.ROJO, it))
+                            "rojo"
+                        else if (ApuestaEvaluator.esGanadora(TipoApuesta.NEGRO, it))
+                            "negro"
+                        else
+                            "verde"
+
+                        val paridad = if (ApuestaEvaluator.esGanadora(TipoApuesta.PAR, it))
+                            "par"
+                        else
+                            "impar"
+
+                        val mitad = if (ApuestaEvaluator.esGanadora(TipoApuesta.PASSE, it))
+                            "passe"
+                        else
+                            "manque"
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    color = panelInside,
+                                    shape = RoundedCornerShape(18.dp)
+                                )
+                                .border(
+                                    width = 1.dp,
+                                    color = gold.copy(alpha = 0.6f),
+                                    shape = RoundedCornerShape(18.dp)
+                                )
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Resultado: ${it.numero} ($color, $paridad, $mitad)",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    if (monedas <= 0) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text("❌ Te has quedado sin monedas", color = Color.White)
+                        partidaFinalizada = true;
+                    }
                 }
             }
         }
-
     }
 }
