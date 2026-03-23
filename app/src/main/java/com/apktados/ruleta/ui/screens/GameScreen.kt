@@ -52,6 +52,14 @@ import androidx.compose.runtime.DisposableEffect
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
+import androidx.compose.ui.unit.dp
+
 
 @Composable
 public fun GameScreen(
@@ -279,7 +287,6 @@ public fun GameScreen(
                                 fontWeight = FontWeight.SemiBold
                             )
 
-                            //
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -493,17 +500,12 @@ public fun GameScreen(
                             Button(
                                 onClick = {
                                     if (girando) return@Button
-                                    /*if (apuestasSeleccionadas.isEmpty()) return@Button
-                                    if (cantidadApuesta > monedas) return@Button*/
-
                                     if (!apuestasValidas) return@Button
                                     if (apuestaTotal == 0) return@Button
                                     if (apuestaTotal > monedas) return@Button
 
-                                    // Bloqueamos UI
-                                    girando = true
 
-                                    // Lanzamos animación + resolución
+                                    girando = true
                                     scope.launch {
 
                                         // Gira entre 3 y 6 vueltas
@@ -641,7 +643,20 @@ public fun GameScreen(
 
                     if (monedas <= 0) {
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text("❌ Te has quedado sin monedas", color = Color.White)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Sin monedas",
+                                tint = Color.Red
+                            )
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Text(
+                                "Te has quedado sin monedas",
+                                color = Color.White
+                            )
+                        }
                         partidaFinalizada = true
                     }
                 }

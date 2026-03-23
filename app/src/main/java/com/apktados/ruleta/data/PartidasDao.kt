@@ -24,7 +24,7 @@ class PartidasDao(private val dbHelper: RuletaDbHelper) {
             if (longitud != null) put(RuletaContract.Partidas.COLUMN_LONGITUD, longitud)
         }
 
-        // Devuelve id de la fila o -1 si error (como explica la doc)
+        // Devuelve id de la fila o -1 si error
         return db.insert(RuletaContract.Partidas.TABLE_NAME, null, values)
     }
 

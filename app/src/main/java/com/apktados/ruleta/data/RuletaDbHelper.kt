@@ -13,7 +13,6 @@ class RuletaDbHelper(context: Context) :
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // Para este proyecto, simple: borramos y recreamos (como en el ejemplo de la doc)
         db.execSQL(SQL_DELETE_PARTIDAS)
         onCreate(db)
     }

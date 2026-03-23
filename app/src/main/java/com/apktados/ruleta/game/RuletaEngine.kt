@@ -1,19 +1,4 @@
 package com.apktados.ruleta.game
-/*import kotlin.random.Random
-
-fun spinRulette(): Int {
-    return Random.nextInt(0, 37)
-}
-fun isRed(number: Int): Boolean {
-    val redNumbers = listOf(
-        1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36
-    )
-    return number in redNumbers
-}
-
-fun isEven(number: Int) = number != 0 && number % 2 == 0
-
-fun isPasse(number: Int) = number in 19..36*/
 
 data class ResultadoRuleta(
     val numero: Int,

@@ -44,7 +44,6 @@ fun HistoryScreen(navController: NavController) {
     val darkOverlay = Color(0xCC111111)
     val buttonRed = Color(0xFFC00000)
 
-    // 🔥 RxJava en lugar de coroutines
     DisposableEffect(Unit) {
 
         loading = true
