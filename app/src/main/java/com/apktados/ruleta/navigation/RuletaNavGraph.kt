@@ -18,7 +18,8 @@ fun RuletaNavGraph() {
                 },
                 onHistorial = {
                     navController.navigate("history")
-                }
+                },
+                navController
             )
         }
 

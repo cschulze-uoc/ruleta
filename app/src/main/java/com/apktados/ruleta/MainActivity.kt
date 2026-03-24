@@ -36,7 +36,8 @@ fun RuletaApp() {
         composable("home") {
             HomeScreen(
                 onNuevaPartida = { jugador -> navController.navigate("game/$jugador") },
-                onHistorial = { navController.navigate("history") }
+                onHistorial = { navController.navigate("history") },
+                navController = navController
             )
         }
 

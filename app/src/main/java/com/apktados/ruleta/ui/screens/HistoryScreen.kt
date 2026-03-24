@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import com.apktados.ruleta.R
 import com.apktados.ruleta.data.Partida
 import com.apktados.ruleta.data.PartidasRepository
+import com.apktados.ruleta.ui.bars.RuletaTopBar
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -69,109 +70,121 @@ fun HistoryScreen(navController: NavController) {
             disposables.clear()
         }
     }
-
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.home_background),
-            contentDescription = "Fondo casino",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-
+    Scaffold(
+        topBar = {
+            RuletaTopBar(
+                titulo = "APKtados",
+                onBack = { navController.popBackStack() },
+                onNavigateHome = { navController.navigate("home")  },
+                onNavigateRanking = { navController.navigate("history")},
+                onNavigateGame = {navController.navigate("home") }
+            )
+        }
+    ) { padding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp)
-                .background(
-                    color = darkOverlay,
-                    shape = RoundedCornerShape(24.dp)
-                )
-                .border(
-                    width = 2.dp,
-                    color = gold.copy(alpha = 0.8f),
-                    shape = RoundedCornerShape(24.dp)
-                )
-                .padding(20.dp)
+            modifier = Modifier.fillMaxSize()
+                .padding(padding)
         ) {
-            Column(
+            Image(
+                painter = painterResource(id = R.drawable.home_background),
+                contentDescription = "Fondo casino",
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                contentScale = ContentScale.Crop
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+                    .background(
+                        color = darkOverlay,
+                        shape = RoundedCornerShape(24.dp)
+                    )
+                    .border(
+                        width = 2.dp,
+                        color = gold.copy(alpha = 0.8f),
+                        shape = RoundedCornerShape(24.dp)
+                    )
+                    .padding(20.dp)
             ) {
-                Text(
-                    text = "HISTORIAL",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = gold,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Button(
-                    onClick = { navController.popBackStack() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = buttonRed,
-                        contentColor = Color.White
-                    ),
-                    border = BorderStroke(2.dp, gold)
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Volver", fontWeight = FontWeight.Bold)
-                }
+                    Text(
+                        text = "HISTORIAL",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = gold,
+                        fontWeight = FontWeight.Bold
+                    )
 
-                when {
-                    loading -> {
-                        Text("Cargando historial...", color = Color.White)
+                    Button(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = buttonRed,
+                            contentColor = Color.White
+                        ),
+                        border = BorderStroke(2.dp, gold)
+                    ) {
+                        Text("Volver", fontWeight = FontWeight.Bold)
                     }
 
-                    error != null -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    color = Color(0x66000000),
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                                .padding(16.dp)
-                        ) {
-                            Text("Error: $error", color = Color.Red)
+                    when {
+                        loading -> {
+                            Text("Cargando historial...", color = Color.White)
                         }
-                    }
 
-                    items.isEmpty() -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    color = Color(0x66000000),
-                                    shape = RoundedCornerShape(16.dp)
+                        error != null -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        color = Color(0x66000000),
+                                        shape = RoundedCornerShape(16.dp)
+                                    )
+                                    .padding(16.dp)
+                            ) {
+                                Text("Error: $error", color = Color.Red)
+                            }
+                        }
+
+                        items.isEmpty() -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        color = Color(0x66000000),
+                                        shape = RoundedCornerShape(16.dp)
+                                    )
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    "Aún no hay partidas guardadas.",
+                                    color = Color.White
                                 )
-                                .padding(16.dp)
-                        ) {
+                            }
+                        }
+
+                        else -> {
                             Text(
-                                "Aún no hay partidas guardadas.",
-                                color = Color.White
+                                text = "Partidas guardadas: ${items.size}",
+                                color = gold,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
                             )
-                        }
-                    }
 
-                    else -> {
-                        Text(
-                            text = "Partidas guardadas: ${items.size}",
-                            color = gold,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            items(items) { partida ->
-                                PartidaRow(p = partida, gold = gold)
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                items(items) { partida ->
+                                    PartidaRow(p = partida, gold = gold)
+                                }
                             }
                         }
                     }
