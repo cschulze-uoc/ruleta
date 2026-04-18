@@ -17,14 +17,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MaterialTheme {
-                RuletaApp()
+                RuletaMainApp()
             }
         }
     }
 }
 
 @Composable
-fun RuletaApp() {
+fun RuletaMainApp() {
 
     val navController = rememberNavController()
 
