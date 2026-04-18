@@ -50,6 +50,10 @@ import com.apktados.ruleta.ui.bars.RuletaTopBar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.text.font.Font
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -62,6 +66,17 @@ fun HomeScreen(
 
     val context = LocalContext.current
     val repo = remember { PartidasRepository(context) }
+
+    val app = LocalContext.current.applicationContext as com.apktados.ruleta.RuletaApp
+    val musicManager = app.musicManager
+
+    val musicPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let {
+            musicManager.setCustomMusic(it)
+        }
+    }
 
     var top3 by remember { mutableStateOf<List<Partida>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
@@ -167,6 +182,23 @@ fun HomeScreen(
                             text = if (musicManager.musicaActiva) "🔊 Música ON" else "🔇 Música OFF",
                             fontWeight = FontWeight.Bold
                         )
+                    }
+
+                    Button(
+                        onClick = {
+                            musicPicker.launch(arrayOf("audio/*"))
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF1B5E20),
+                            contentColor = Color.White
+                        ),
+                        border = BorderStroke(2.dp, gold)
+                    ) {
+                        Text("🎧 Elegir música", fontWeight = FontWeight.Bold)
                     }
 
                     OutlinedTextField(
