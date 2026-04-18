@@ -145,6 +145,30 @@ fun HomeScreen(
                         fontWeight = FontWeight.ExtraBold
                     )
 
+                    val app = LocalContext.current.applicationContext as com.apktados.ruleta.RuletaApp
+                    val musicManager = app.musicManager
+
+                    Button(
+                        onClick = { musicManager.toggleMusic() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (musicManager.musicaActiva)
+                                Color(0xFF2E7D32) // verde ON
+                            else
+                                Color(0xFF6D6D6D), // gris OFF
+                            contentColor = Color.White
+                        ),
+                        border = BorderStroke(2.dp, gold)
+                    ) {
+                        Text(
+                            text = if (musicManager.musicaActiva) "🔊 Música ON" else "🔇 Música OFF",
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
                     OutlinedTextField(
                         value = jugador,
                         onValueChange = { jugador = it },

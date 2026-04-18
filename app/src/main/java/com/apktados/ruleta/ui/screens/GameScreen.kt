@@ -56,6 +56,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.layout.ContentScale
 import com.apktados.ruleta.data.PartidasRepository
 import com.apktados.ruleta.ui.bars.RuletaTopBar
@@ -89,18 +90,25 @@ public fun GameScreen(
     var monedas by remember { mutableStateOf(3) }
     var resultado by remember { mutableStateOf<ResultadoRuleta?>(null) }
 
-    val disposables = remember { CompositeDisposable() }
-    DisposableEffect(Unit) {
-        onDispose {
-            disposables.clear()
-        }
-    }
-
     var partidaFinalizada by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val repo = remember { PartidasRepository(context) }
     val scope = rememberCoroutineScope()
+
+    //val musicManager = remember { com.apktados.ruleta.audio.MusicManager(context) }
+
+    /*LaunchedEffect(Unit) {
+        musicManager.startDefaultMusic()
+    }*/
+
+    val disposables = remember { CompositeDisposable() }
+    DisposableEffect(Unit) {
+        onDispose {
+            disposables.clear()
+            //musicManager.release()
+        }
+    }
 
     val gold = Color(0xFFFFD700)
     val darkPanel = Color(0xB3000000)
