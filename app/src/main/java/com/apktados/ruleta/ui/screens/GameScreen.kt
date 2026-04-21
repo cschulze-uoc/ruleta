@@ -67,6 +67,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import com.apktados.ruleta.notification.NotificationHelper
 
 @Composable
 public fun GameScreen(
@@ -651,6 +652,7 @@ public fun GameScreen(
                                                     )
 
                                                 disposables.add(disposable)
+                                                NotificationHelper.mostrarVictoria(context, tiempoResolucionMs)
                                             }
                                         }
                                     },

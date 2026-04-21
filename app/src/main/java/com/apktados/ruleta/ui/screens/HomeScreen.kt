@@ -2,6 +2,11 @@ package com.apktados.ruleta.ui.screens
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,6 +35,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,21 +49,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.apktados.ruleta.R
 import com.apktados.ruleta.data.Partida
 import com.apktados.ruleta.data.PartidasRepository
+import com.apktados.ruleta.notification.NotificationHelper
 import com.apktados.ruleta.ui.bars.RuletaTopBar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import android.net.Uri
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.ui.text.font.Font
-import com.apktados.ruleta.location.locationHelper
-import kotlinx.coroutines.launch
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -71,7 +72,7 @@ fun HomeScreen(
     val context = LocalContext.current
     val repo = remember { PartidasRepository(context) }
 
-    val app = LocalContext.current.applicationContext as com.apktados.ruleta.RuletaApp
+    val app = context.applicationContext as com.apktados.ruleta.RuletaApp
     val musicManager = app.musicManager
 
     val musicPicker = rememberLauncherForActivityResult(
@@ -85,24 +86,66 @@ fun HomeScreen(
     var top3 by remember { mutableStateOf<List<Partida>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
 
-    val locationHelper = locationHelper(context)
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
         val coarseGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        val notificationGranted = permissions[Manifest.permission.POST_NOTIFICATIONS] == true
 
         if (fineGranted || coarseGranted) {
-
+            Log.d("PERM", "Permiso de ubicación concedido")
         } else {
-            Log.e("LOC", "Permiso de ubicación denegado")
+            Log.e("PERM", "Permiso de ubicación denegado")
+        }
+
+        if (notificationGranted) {
+            Log.d("PERM", "Permiso de notificaciones concedido")
+        } else {
+            Log.e("PERM", "Permiso de notificaciones denegado")
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        NotificationHelper.crearCanal(context)
+
+        val permisosPendientes = mutableListOf<String>()
+
+        if (
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permisosPendientes.add(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+
+        if (
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permisosPendientes.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
+
+        if (
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permisosPendientes.add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
+        if (permisosPendientes.isNotEmpty()) {
+            permissionLauncher.launch(permisosPendientes.toTypedArray())
         }
     }
 
     val disposables = remember { CompositeDisposable() }
 
     DisposableEffect(Unit) {
-
         loading = true
 
         val disposable = repo.top10()
@@ -118,28 +161,31 @@ fun HomeScreen(
                     loading = false
                 }
             )
-            disposables.add(disposable)
-            onDispose {
-                disposables.clear()
-            }
-        }
 
+        disposables.add(disposable)
+
+        onDispose {
+            disposables.clear()
+        }
+    }
 
     val gold = Color(0xFFFFD700)
     val darkOverlay = Color(0xCC111111)
+
     Scaffold(
         topBar = {
             RuletaTopBar(
                 titulo = "APKtados",
                 onBack = { navController.popBackStack() },
                 onNavigateHome = { navController.navigate("home") },
-                onNavigateRanking = { navController.navigate("history")},
-                onNavigateGame = {onNuevaPartida(jugador)}
+                onNavigateRanking = { navController.navigate("history") },
+                onNavigateGame = { onNuevaPartida(jugador) }
             )
         }
     ) { padding ->
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(padding)
         ) {
             Image(
@@ -177,9 +223,6 @@ fun HomeScreen(
                         fontWeight = FontWeight.ExtraBold
                     )
 
-                    val app = LocalContext.current.applicationContext as com.apktados.ruleta.RuletaApp
-                    val musicManager = app.musicManager
-
                     Button(
                         onClick = { musicManager.toggleMusic() },
                         modifier = Modifier
@@ -188,9 +231,9 @@ fun HomeScreen(
                         shape = RoundedCornerShape(18.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (musicManager.musicaActiva)
-                                Color(0xFF2E7D32) // verde ON
+                                Color(0xFF2E7D32)
                             else
-                                Color(0xFF6D6D6D), // gris OFF
+                                Color(0xFF6D6D6D),
                             contentColor = Color.White
                         ),
                         border = BorderStroke(2.dp, gold)

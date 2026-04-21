@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.apktados.ruleta"
-        minSdk = 30
+        minSdk = 33
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
