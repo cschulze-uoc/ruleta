@@ -59,7 +59,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.layout.ContentScale
 import com.apktados.ruleta.data.PartidasRepository
+import com.apktados.ruleta.location.locationHelper
 import com.apktados.ruleta.ui.bars.RuletaTopBar
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 
 @Composable
 public fun GameScreen(
@@ -117,6 +124,37 @@ public fun GameScreen(
     val casinoGreen = Color(0xFF2E7D32)
     val casinoGreenDark = Color(0xFF1B5E20)
     val casinoBrown = Color(0xFF6D4C41)
+
+    val locationHelper = locationHelper(context)
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        val coarseGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+
+        if (fineGranted || coarseGranted) {
+            scope.launch {
+                val location = locationHelper.obtenerUbicacionActual()
+                val disposable = repo.guardarPartida(
+                    jugador = jugador,
+                    monedasFinales = monedas,
+                    lat = location?.latitude,
+                    lon = location?.longitude
+                )
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        { partidaFinalizada = true },
+                        { error -> Log.e("DB", "Error guardando partida", error) }
+                    )
+
+                disposables.add(disposable)
+            }
+        } else {
+            Log.e("LOC", "Permiso de ubicación denegado")
+        }
+    }
+
     Scaffold(
         topBar = {
             RuletaTopBar(
@@ -609,25 +647,43 @@ public fun GameScreen(
 
                                 Button(
                                     onClick = {
-                                        partidaFinalizada = true
-                                        val disposable =
-                                            repo.guardarPartida(
-                                                jugador = jugador,
-                                                monedasFinales = monedas
-                                            )
-                                                .subscribeOn(Schedulers.io())
-                                                .observeOn(AndroidSchedulers.mainThread())
-                                                .subscribe(
-                                                    { println("Partida guardada") },
-                                                    { error ->
-                                                        Log.e(
-                                                            "DB",
-                                                            "Error guardando partida",
-                                                            error
-                                                        )
-                                                    }
+                                        val fineGranted = ContextCompat.checkSelfPermission(
+                                            context,
+                                            Manifest.permission.ACCESS_FINE_LOCATION
+                                        ) == PackageManager.PERMISSION_GRANTED
+
+                                        val coarseGranted = ContextCompat.checkSelfPermission(
+                                            context,
+                                            Manifest.permission.ACCESS_COARSE_LOCATION
+                                        ) == PackageManager.PERMISSION_GRANTED
+
+                                        if (fineGranted || coarseGranted) {
+                                            scope.launch {
+                                                val location = locationHelper.obtenerUbicacionActual()
+
+                                                val disposable = repo.guardarPartida(
+                                                    jugador = jugador,
+                                                    monedasFinales = monedas,
+                                                    lat = location?.latitude,
+                                                    lon = location?.longitude
                                                 )
-                                        disposables.add(disposable)
+                                                    .subscribeOn(Schedulers.io())
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe(
+                                                        { partidaFinalizada = true },
+                                                        { error -> Log.e("DB", "Error guardando partida", error) }
+                                                    )
+
+                                                disposables.add(disposable)
+                                            }
+                                        } else {
+                                            permissionLauncher.launch(
+                                                arrayOf(
+                                                    Manifest.permission.ACCESS_FINE_LOCATION,
+                                                    Manifest.permission.ACCESS_COARSE_LOCATION
+                                                )
+                                            )
+                                        }
                                     },
                                     enabled = monedas > 0 && !partidaFinalizada,
                                     modifier = Modifier.fillMaxWidth(),

@@ -237,7 +237,12 @@ private fun PartidaRow(
                     text = "Fecha: ${sdf.format(Date(p.fecha))}",
                     color = Color.LightGray
                 )
-
+                if (p.latitud != null && p.longitud != null) {
+                    Text(
+                        text = "Ubicación: ${"%.5f".format(p.latitud)}, ${"%.5f".format(p.longitud)}",
+                        color = Color.LightGray
+                    )
+                }
                 if (p.latitud != null && p.longitud != null) {
                     Text(
                         text = "Ubicación: ${"%.5f".format(p.latitud)}, ${"%.5f".format(p.longitud)}",

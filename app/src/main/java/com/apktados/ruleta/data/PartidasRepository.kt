@@ -16,6 +16,7 @@ class PartidasRepository(context: Context) {
         lon: Double? = null
     ): Completable {
         return Completable.fromAction {
+
             dao.insertarPartida(
                 fecha = System.currentTimeMillis(),
                 jugador = jugador,
