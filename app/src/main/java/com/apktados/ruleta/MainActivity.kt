@@ -2,22 +2,27 @@ package com.apktados.ruleta
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.*
-import androidx.navigation.compose.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.apktados.ruleta.notification.NotificationHelper
 import com.apktados.ruleta.ui.screens.GameScreen
 import com.apktados.ruleta.ui.screens.HelpScreen
 import com.apktados.ruleta.ui.screens.HistoryScreen
 import com.apktados.ruleta.ui.screens.HomeScreen
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val mostrarTiempoState = mutableStateOf(false)
     private val tiempoMsState = mutableLongStateOf(0L)
@@ -72,14 +77,19 @@ fun RuletaMainApp(
             onDismissRequest = onCerrarDialogoTiempo,
             confirmButton = {
                 TextButton(onClick = onCerrarDialogoTiempo) {
-                    Text("Aceptar")
+                    Text(stringResource(R.string.accept))
                 }
             },
             title = {
-                Text("Tiempo de resolución")
+                Text(stringResource(R.string.resolution_time))
             },
             text = {
-                Text("La partida ha durado ${formatearTiempo(tiempoResolucionMs)}")
+                Text(
+                    stringResource(
+                        R.string.game_duration,
+                        formatearTiempo(tiempoResolucionMs)
+                    )
+                )
             }
         )
     }
@@ -120,5 +130,11 @@ fun formatearTiempo(ms: Long): String {
     val segundos = totalSegundos % 60
     val milisegundos = ms % 1000
 
-    return String.format("%02d:%02d.%03d", minutos, segundos, milisegundos)
+    return String.format(
+        java.util.Locale.US,
+        "%02d:%02d.%03d",
+        minutos,
+        segundos,
+        milisegundos
+    )
 }

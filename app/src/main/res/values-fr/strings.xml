@@ -1,0 +1,98 @@
+<resources>
+    <string name="app_name">Roulette</string>
+    <string name="new_game">Nouvelle partie</string>
+    <string name="history">Historique</string>
+    <string name="settings">Paramètres</string>
+    <string name="select_language">Choisir la langue</string>
+    <string name="player_name">Nom du joueur</string>
+    <string name="coins">Jetons</string>
+    <string name="spin">Lancer</string>
+    <string name="back">Retour</string>
+    <string name="menu">Menu</string>
+    <string name="home">Accueil</string>
+    <string name="ranking">Classement</string>
+    <string name="game">Jeu</string>
+    <string name="help">Aide</string>
+    <string name="language_system">Langue du système</string>
+    <string name="language_spanish">Espagnol</string>
+    <string name="language_english">Anglais</string>
+    <string name="language_catalan">Catalan</string>
+    <string name="language_french">Français</string>
+
+    <string name="topbar_title">APKtados</string>
+    <string name="background_casino">Fond casino</string>
+    <string name="home_title">Roulette</string>
+
+    <string name="music_on">Musique ON</string>
+    <string name="music_off">Musique OFF</string>
+    <string name="choose_music">Choisir une musique</string>
+
+    <string name="best_scores">Meilleurs scores</string>
+    <string name="loading">Chargement…</string>
+    <string name="no_games_yet">Aucune partie pour le moment.</string>
+    <string name="score_row">%1$d. %2$s - %3$d jetons</string>
+
+    <string name="permission_location_granted">Autorisation de localisation accordée</string>
+    <string name="permission_location_denied">Autorisation de localisation refusée</string>
+    <string name="permission_notifications_granted">Autorisation des notifications accordée</string>
+    <string name="permission_notifications_denied">Autorisation des notifications refusée</string>
+
+    <string name="cd_best_scores">Meilleurs scores</string>
+
+    <string name="roulette_title">Roulette</string>
+    <string name="game_finished">PARTIE TERMINÉE</string>
+    <string name="final_coins">Jetons finaux : %1$d</string>
+    <string name="back_to_menu">Retour au menu</string>
+
+    <string name="player_label">Joueur : %1$s</string>
+    <string name="coins_label">Jetons : %1$d</string>
+    <string name="bet_total_label">Mise totale : %1$d</string>
+    <string name="spinning">En rotation…</string>
+
+    <string name="roulette_image">Roulette</string>
+    <string name="bets_title">PARIS</string>
+    <string name="bet_color">Couleur</string>
+    <string name="red">Rouge</string>
+    <string name="black">Noir</string>
+    <string name="bet_parity">Parité</string>
+    <string name="even">Pair</string>
+    <string name="odd">Impair</string>
+    <string name="bet_half">Moitié</string>
+    <string name="manque">Manque</string>
+    <string name="passe">Passe</string>
+
+    <string name="spin_roulette">Lancer la roulette</string>
+    <string name="retire">Se retirer</string>
+
+    <string name="result_text">Résultat : %1$d (%2$s, %3$s, %4$s)</string>
+    <string name="green">vert</string>
+    <string name="red_lower">rouge</string>
+    <string name="black_lower">noir</string>
+    <string name="even_lower">pair</string>
+    <string name="odd_lower">impair</string>
+    <string name="passe_lower">passe</string>
+    <string name="manque_lower">manque</string>
+
+    <string name="no_coins_cd">Plus de jetons</string>
+    <string name="no_coins_message">Vous n\'avez plus de jetons</string>
+
+    <string name="db_save_error">Erreur lors de l\'enregistrement</string>
+
+    <string name="history_read_error">Erreur lors de la lecture de l\'historique</string>
+    <string name="history_title_upper">HISTORIQUE</string>
+    <string name="loading_history">Chargement de l\'historique…</string>
+    <string name="error_prefix">Erreur : %1$s</string>
+    <string name="no_saved_games">Aucune partie enregistrée.</string>
+    <string name="saved_games_count">Parties enregistrées : %1$d</string>
+
+    <string name="player_row">Joueur : %1$s</string>
+    <string name="final_coins_row">Jetons finaux : %1$d</string>
+    <string name="date_row">Date : %1$s</string>
+    <string name="location_row">Position : %1$s, %2$s</string>
+    <string name="time_seconds_row">Temps : %1$s</string>
+    <string name="casino_background">Fond casino</string>
+
+    <string name="accept">Accepter</string>
+    <string name="resolution_time">Temps de résolution</string>
+    <string name="game_duration">La partie a duré %1$s</string>
+</resources>

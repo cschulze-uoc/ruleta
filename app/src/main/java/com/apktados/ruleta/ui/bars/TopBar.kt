@@ -2,13 +2,12 @@ package com.apktados.ruleta.ui.bars
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,7 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.apktados.ruleta.R
+import com.apktados.ruleta.localization.localizationHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +42,7 @@ fun RuletaTopBar(
     onNavigateHelp: () -> Unit
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
+    var menuIdiomaExpanded by remember { mutableStateOf(false) }
 
     TopAppBar(
         title = {
@@ -60,51 +62,100 @@ fun RuletaTopBar(
             IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Volver"
+                    contentDescription = stringResource(R.string.back)
                 )
             }
         },
         actions = {
             Box {
-                IconButton(onClick = { menuExpanded = true }) {
+                IconButton(onClick = { menuIdiomaExpanded = true }) {
                     Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Menú"
+                        imageVector = Icons.Default.Language,
+                        contentDescription = stringResource(R.string.menu)
                     )
                 }
 
+                DropdownMenu(
+                    expanded = menuIdiomaExpanded,
+                    onDismissRequest = { menuIdiomaExpanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.language_system)) },
+                        onClick = {
+                            menuIdiomaExpanded = false
+                            localizationHelper.useSystemLanguage()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.language_spanish)) },
+                        onClick = {
+                            menuIdiomaExpanded = false
+                            localizationHelper.setLanguage("es")
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.language_english)) },
+                        onClick = {
+                            menuIdiomaExpanded = false
+                            localizationHelper.setLanguage("en")
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.language_catalan)) },
+                        onClick = {
+                            menuIdiomaExpanded = false
+                            localizationHelper.setLanguage("ca")
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.language_french)) },
+                        onClick = {
+                            menuIdiomaExpanded = false
+                            localizationHelper.setLanguage("fr")
+                        }
+                    )
+                }
+            }
+            Box {
+                IconButton(onClick = { menuExpanded = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = stringResource(R.string.menu)
+                    )
+                }
                 DropdownMenu(
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Inicio") },
+                        text = { Text(stringResource(R.string.home)) },
                         onClick = {
                             menuExpanded = false
                             onNavigateHome()
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Ranking") },
+                        text = { Text(stringResource(R.string.ranking)) },
                         onClick = {
                             menuExpanded = false
                             onNavigateRanking()
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Juego") },
+                        text = { Text(stringResource(R.string.game)) },
                         onClick = {
                             menuExpanded = false
                             onNavigateGame()
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Ayuda") },
+                        text = { Text(stringResource(R.string.help)) },
                         onClick = {
                             menuExpanded = false
                             onNavigateHelp()
                         }
                     )
+
                 }
             }
         },

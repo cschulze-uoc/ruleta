@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.apktados.ruleta.ui.bars.RuletaTopBar
+import com.apktados.ruleta.R
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
@@ -19,7 +21,7 @@ fun HelpScreen(navController: NavController) {
         topBar = {
             RuletaTopBar(
 
-                titulo = "Ayuda",
+                titulo = stringResource(R.string.help),
                 onBack = { navController.popBackStack() },
                 onNavigateHome = { navController.navigate("home") },
                 onNavigateRanking = { navController.navigate("history") },

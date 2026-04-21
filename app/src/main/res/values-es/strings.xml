@@ -1,0 +1,98 @@
+<resources>
+    <string name="app_name">Ruleta</string>
+    <string name="new_game">Nueva partida</string>
+    <string name="history">Historial</string>
+    <string name="settings">Ajustes</string>
+    <string name="select_language">Seleccionar idioma</string>
+    <string name="player_name">Nombre del jugador</string>
+    <string name="coins">Monedas</string>
+    <string name="spin">Girar</string>
+    <string name="back">Volver</string>
+    <string name="menu">Menú</string>
+    <string name="home">Inicio</string>
+    <string name="ranking">Ranking</string>
+    <string name="game">Juego</string>
+    <string name="help">Ayuda</string>
+    <string name="language_system">Idioma del sistema</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_english">English</string>
+    <string name="language_catalan">Català</string>
+    <string name="language_french">Francés</string>
+
+    <string name="topbar_title">APKtados</string>
+    <string name="background_casino">Fondo casino</string>
+    <string name="home_title">Ruleta</string>
+
+    <string name="music_on">Música ON</string>
+    <string name="music_off">Música OFF</string>
+    <string name="choose_music">Elegir música</string>
+
+    <string name="best_scores">Mejores puntuaciones</string>
+    <string name="loading">Cargando…</string>
+    <string name="no_games_yet">Aún no hay partidas.</string>
+    <string name="score_row">%1$d. %2$s - %3$d monedas</string>
+
+    <string name="permission_location_granted">Permiso de ubicación concedido</string>
+    <string name="permission_location_denied">Permiso de ubicación denegado</string>
+    <string name="permission_notifications_granted">Permiso de notificaciones concedido</string>
+    <string name="permission_notifications_denied">Permiso de notificaciones denegado</string>
+
+    <string name="cd_best_scores">Mejores puntuaciones</string>
+
+    <string name="roulette_title">Ruleta</string>
+    <string name="game_finished">PARTIDA FINALIZADA</string>
+    <string name="final_coins">Monedas finales: %1$d</string>
+    <string name="back_to_menu">Volver al menú</string>
+
+    <string name="player_label">Jugador: %1$s</string>
+    <string name="coins_label">Monedas: %1$d</string>
+    <string name="bet_total_label">Apostado: %1$d</string>
+    <string name="spinning">Girando…</string>
+
+    <string name="roulette_image">Ruleta</string>
+    <string name="bets_title">APUESTAS</string>
+    <string name="bet_color">Color</string>
+    <string name="red">Rojo</string>
+    <string name="black">Negro</string>
+    <string name="bet_parity">Paridad</string>
+    <string name="even">Par</string>
+    <string name="odd">Impar</string>
+    <string name="bet_half">Mitad</string>
+    <string name="manque">Manque</string>
+    <string name="passe">Passe</string>
+
+    <string name="spin_roulette">Girar ruleta</string>
+    <string name="retire">Retirarse</string>
+
+    <string name="result_text">Resultado: %1$d (%2$s, %3$s, %4$s)</string>
+    <string name="green">verde</string>
+    <string name="red_lower">rojo</string>
+    <string name="black_lower">negro</string>
+    <string name="even_lower">par</string>
+    <string name="odd_lower">impar</string>
+    <string name="passe_lower">passe</string>
+    <string name="manque_lower">manque</string>
+
+    <string name="no_coins_cd">Sin monedas</string>
+    <string name="no_coins_message">Te has quedado sin monedas</string>
+
+    <string name="db_save_error">Error guardando partida</string>
+
+    <string name="history_read_error">Error leyendo historial</string>
+    <string name="history_title_upper">HISTORIAL</string>
+    <string name="loading_history">Cargando historial…</string>
+    <string name="error_prefix">Error: %1$s</string>
+    <string name="no_saved_games">Aún no hay partidas guardadas.</string>
+    <string name="saved_games_count">Partidas guardadas: %1$d</string>
+
+    <string name="player_row">Jugador: %1$s</string>
+    <string name="final_coins_row">Monedas finales: %1$d</string>
+    <string name="date_row">Fecha: %1$s</string>
+    <string name="location_row">Ubicación: %1$s, %2$s</string>
+    <string name="time_seconds_row">Tiempo: %1$s</string>
+    <string name="casino_background">Fondo casino</string>
+
+    <string name="accept">Aceptar</string>
+    <string name="resolution_time">Tiempo de resolución</string>
+    <string name="game_duration">La partida ha durado %1$s</string>
+</resources>

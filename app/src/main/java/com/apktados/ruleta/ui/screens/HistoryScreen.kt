@@ -4,28 +4,46 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.apktados.ruleta.R
 import com.apktados.ruleta.data.Partida
 import com.apktados.ruleta.data.PartidasRepository
+import com.apktados.ruleta.formatearTiempo
 import com.apktados.ruleta.ui.bars.RuletaTopBar
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -46,7 +64,6 @@ fun HistoryScreen(navController: NavController) {
     val buttonRed = Color(0xFFC00000)
 
     DisposableEffect(Unit) {
-
         loading = true
         error = null
 
@@ -59,7 +76,7 @@ fun HistoryScreen(navController: NavController) {
                     loading = false
                 },
                 { e ->
-                    error = e.message ?: "Error leyendo historial"
+                    error = e.message ?: context.getString(R.string.history_read_error)
                     loading = false
                 }
             )
@@ -70,25 +87,27 @@ fun HistoryScreen(navController: NavController) {
             disposables.clear()
         }
     }
+
     Scaffold(
         topBar = {
             RuletaTopBar(
-                titulo = "APKtados",
+                titulo = stringResource(R.string.history),
                 onBack = { navController.popBackStack() },
-                onNavigateHome = { navController.navigate("home")  },
-                onNavigateRanking = { navController.navigate("history")},
-                onNavigateGame = {navController.navigate("home") },
-                onNavigateHelp = {navController.navigate("help")}
+                onNavigateHome = { navController.navigate("home") },
+                onNavigateRanking = { navController.navigate("history") },
+                onNavigateGame = { navController.navigate("home") },
+                onNavigateHelp = { navController.navigate("help") }
             )
         }
     ) { padding ->
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(padding)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.home_background),
-                contentDescription = "Fondo casino",
+                contentDescription = stringResource(R.string.casino_background),
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
@@ -114,7 +133,7 @@ fun HistoryScreen(navController: NavController) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "HISTORIAL",
+                        text = stringResource(R.string.history_title_upper),
                         style = MaterialTheme.typography.headlineLarge,
                         color = gold,
                         fontWeight = FontWeight.Bold
@@ -132,12 +151,18 @@ fun HistoryScreen(navController: NavController) {
                         ),
                         border = BorderStroke(2.dp, gold)
                     ) {
-                        Text("Volver", fontWeight = FontWeight.Bold)
+                        Text(
+                            text = stringResource(R.string.back),
+                            fontWeight = FontWeight.Bold
+                        )
                     }
 
                     when {
                         loading -> {
-                            Text("Cargando historial...", color = Color.White)
+                            Text(
+                                text = stringResource(R.string.loading_history),
+                                color = Color.White
+                            )
                         }
 
                         error != null -> {
@@ -150,7 +175,10 @@ fun HistoryScreen(navController: NavController) {
                                     )
                                     .padding(16.dp)
                             ) {
-                                Text("Error: $error", color = Color.Red)
+                                Text(
+                                    text = stringResource(R.string.error_prefix, error ?: ""),
+                                    color = Color.Red
+                                )
                             }
                         }
 
@@ -165,7 +193,7 @@ fun HistoryScreen(navController: NavController) {
                                     .padding(16.dp)
                             ) {
                                 Text(
-                                    "Aún no hay partidas guardadas.",
+                                    text = stringResource(R.string.no_saved_games),
                                     color = Color.White
                                 )
                             }
@@ -173,7 +201,7 @@ fun HistoryScreen(navController: NavController) {
 
                         else -> {
                             Text(
-                                text = "Partidas guardadas: ${items.size}",
+                                text = stringResource(R.string.saved_games_count, items.size),
                                 color = gold,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
@@ -200,6 +228,8 @@ private fun PartidaRow(
     p: Partida,
     gold: Color
 ) {
+    val context = LocalContext.current
+
     val sdf = remember {
         SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
     }
@@ -223,35 +253,41 @@ private fun PartidaRow(
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    text = "Jugador: ${p.jugador}",
+                    text = stringResource(R.string.player_row, p.jugador),
                     style = MaterialTheme.typography.titleMedium,
                     color = gold,
                     fontWeight = FontWeight.Bold
                 )
 
                 Text(
-                    text = "Monedas finales: ${p.monedasFinales}",
+                    text = stringResource(R.string.final_coins_row, p.monedasFinales),
                     color = Color.White
                 )
 
                 Text(
-                    text = "Fecha: ${sdf.format(Date(p.fecha))}",
+                    text = stringResource(
+                        R.string.date_row,
+                        sdf.format(Date(p.fecha))
+                    ),
                     color = Color.LightGray
                 )
+
                 if (p.latitud != null && p.longitud != null) {
                     Text(
-                        text = "Ubicación: ${"%.5f".format(p.latitud)}, ${"%.5f".format(p.longitud)}",
+                        text = stringResource(
+                            R.string.location_row,
+                            String.format(Locale.getDefault(), "%.5f", p.latitud),
+                            String.format(Locale.getDefault(), "%.5f", p.longitud)
+                        ),
                         color = Color.LightGray
                     )
                 }
-                if (p.latitud != null && p.longitud != null) {
-                    Text(
-                        text = "Ubicación: ${"%.5f".format(p.latitud)}, ${"%.5f".format(p.longitud)}",
-                        color = Color.LightGray
-                    )
-                }
+
                 Text(
-                    text = "Tiempo: ${p.tiempoResolucionMs/1000} segundos",
+                    text = stringResource(
+                        R.string.time_seconds_row,
+                        formatearTiempo( p.tiempoResolucionMs)
+                    ),
                     color = Color.LightGray
                 )
             }
