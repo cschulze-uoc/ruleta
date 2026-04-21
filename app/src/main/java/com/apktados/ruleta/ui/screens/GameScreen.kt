@@ -140,7 +140,8 @@ public fun GameScreen(
                 onNavigateRanking = {
                     navController.navigate("history")
                 },
-                onNavigateGame = {}
+                onNavigateGame = {},
+                onNavigateHelp = {navController.navigate("help")}
             )
         }
     ) { padding ->

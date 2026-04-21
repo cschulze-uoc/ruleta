@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.navigation.compose.*
 import com.apktados.ruleta.notification.NotificationHelper
 import com.apktados.ruleta.ui.screens.GameScreen
+import com.apktados.ruleta.ui.screens.HelpScreen
 import com.apktados.ruleta.ui.screens.HistoryScreen
 import com.apktados.ruleta.ui.screens.HomeScreen
 
@@ -105,6 +106,10 @@ fun RuletaMainApp(
 
         composable("history") {
             HistoryScreen(navController = navController)
+        }
+
+        composable("help") {
+            HelpScreen(navController = navController)
         }
     }
 }

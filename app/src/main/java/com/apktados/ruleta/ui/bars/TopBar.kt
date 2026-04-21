@@ -37,7 +37,8 @@ fun RuletaTopBar(
     onBack: () -> Unit,
     onNavigateHome: () -> Unit,
     onNavigateRanking: () -> Unit,
-    onNavigateGame: () -> Unit
+    onNavigateGame: () -> Unit,
+    onNavigateHelp: () -> Unit
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
@@ -95,6 +96,13 @@ fun RuletaTopBar(
                         onClick = {
                             menuExpanded = false
                             onNavigateGame()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Ayuda") },
+                        onClick = {
+                            menuExpanded = false
+                            onNavigateHelp()
                         }
                     )
                 }

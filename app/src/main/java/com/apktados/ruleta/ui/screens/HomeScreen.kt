@@ -179,7 +179,8 @@ fun HomeScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateHome = { navController.navigate("home") },
                 onNavigateRanking = { navController.navigate("history") },
-                onNavigateGame = { onNuevaPartida(jugador) }
+                onNavigateGame = { onNuevaPartida(jugador) },
+                onNavigateHelp = {navController.navigate("help")}
             )
         }
     ) { padding ->

@@ -77,7 +77,8 @@ fun HistoryScreen(navController: NavController) {
                 onBack = { navController.popBackStack() },
                 onNavigateHome = { navController.navigate("home")  },
                 onNavigateRanking = { navController.navigate("history")},
-                onNavigateGame = {navController.navigate("home") }
+                onNavigateGame = {navController.navigate("home") },
+                onNavigateHelp = {navController.navigate("help")}
             )
         }
     ) { padding ->
