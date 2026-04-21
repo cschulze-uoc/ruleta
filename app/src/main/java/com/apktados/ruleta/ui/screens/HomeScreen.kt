@@ -1,5 +1,6 @@
 package com.apktados.ruleta.ui.screens
 
+import android.Manifest
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -51,9 +52,12 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.text.font.Font
+import com.apktados.ruleta.location.locationHelper
+import kotlinx.coroutines.launch
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -81,6 +85,19 @@ fun HomeScreen(
     var top3 by remember { mutableStateOf<List<Partida>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
 
+    val locationHelper = locationHelper(context)
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        val coarseGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+
+        if (fineGranted || coarseGranted) {
+
+        } else {
+            Log.e("LOC", "Permiso de ubicación denegado")
+        }
+    }
 
     val disposables = remember { CompositeDisposable() }
 

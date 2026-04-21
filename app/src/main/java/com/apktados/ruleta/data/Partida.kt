@@ -6,5 +6,6 @@ data class Partida(
     val jugador: String,
     val monedasFinales: Int,
     val latitud: Double?,
-    val longitud: Double?
+    val longitud: Double?,
+    val tiempoResolucionMs: Long
 )

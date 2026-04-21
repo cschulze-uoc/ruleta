@@ -13,7 +13,8 @@ class PartidasRepository(context: Context) {
         jugador: String,
         monedasFinales: Int,
         lat: Double? = null,
-        lon: Double? = null
+        lon: Double? = null,
+        tiempo: Long
     ): Completable {
         return Completable.fromAction {
 
@@ -22,7 +23,8 @@ class PartidasRepository(context: Context) {
                 jugador = jugador,
                 monedasFinales = monedasFinales,
                 latitud = lat,
-                longitud = lon
+                longitud = lon,
+                tiempoResolucionMs = tiempo
             )
         }
     }

@@ -249,6 +249,10 @@ private fun PartidaRow(
                         color = Color.LightGray
                     )
                 }
+                Text(
+                    text = "Tiempo: ${p.tiempoResolucionMs/1000} segundos",
+                    color = Color.LightGray
+                )
             }
         }
     }

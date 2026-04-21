@@ -12,5 +12,6 @@ object RuletaContract {
         const val COLUMN_MONEDAS_FINALES = "monedas_finales"
         const val COLUMN_LATITUD = "latitud"
         const val COLUMN_LONGITUD = "longitud"
+        const val COLUMN_TIEMPO_RESOLUCION = "tiempo"
     }
 }

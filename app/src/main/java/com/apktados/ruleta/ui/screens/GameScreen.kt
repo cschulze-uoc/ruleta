@@ -125,35 +125,10 @@ public fun GameScreen(
     val casinoGreenDark = Color(0xFF1B5E20)
     val casinoBrown = Color(0xFF6D4C41)
 
+    val inicioPartida = remember { System.currentTimeMillis() }
+
     val locationHelper = locationHelper(context)
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
-        val coarseGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
 
-        if (fineGranted || coarseGranted) {
-            scope.launch {
-                val location = locationHelper.obtenerUbicacionActual()
-                val disposable = repo.guardarPartida(
-                    jugador = jugador,
-                    monedasFinales = monedas,
-                    lat = location?.latitude,
-                    lon = location?.longitude
-                )
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        { partidaFinalizada = true },
-                        { error -> Log.e("DB", "Error guardando partida", error) }
-                    )
-
-                disposables.add(disposable)
-            }
-        } else {
-            Log.e("LOC", "Permiso de ubicación denegado")
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -660,12 +635,13 @@ public fun GameScreen(
                                         if (fineGranted || coarseGranted) {
                                             scope.launch {
                                                 val location = locationHelper.obtenerUbicacionActual()
-
+                                                val tiempoResolucionMs = System.currentTimeMillis() - inicioPartida
                                                 val disposable = repo.guardarPartida(
                                                     jugador = jugador,
                                                     monedasFinales = monedas,
                                                     lat = location?.latitude,
-                                                    lon = location?.longitude
+                                                    lon = location?.longitude,
+                                                    tiempo = tiempoResolucionMs
                                                 )
                                                     .subscribeOn(Schedulers.io())
                                                     .observeOn(AndroidSchedulers.mainThread())
@@ -676,13 +652,6 @@ public fun GameScreen(
 
                                                 disposables.add(disposable)
                                             }
-                                        } else {
-                                            permissionLauncher.launch(
-                                                arrayOf(
-                                                    Manifest.permission.ACCESS_FINE_LOCATION,
-                                                    Manifest.permission.ACCESS_COARSE_LOCATION
-                                                )
-                                            )
                                         }
                                     },
                                     enabled = monedas > 0 && !partidaFinalizada,
