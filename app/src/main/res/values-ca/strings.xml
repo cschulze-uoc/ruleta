@@ -3,7 +3,7 @@
     <string name="new_game">Nova partida</string>
     <string name="history">Historial</string>
     <string name="settings">Configuració</string>
-    <string name="select_language">Selecciona l’idioma</string>
+    <string name="select_language">Selecciona l\'idioma</string>
     <string name="player_name">Nom del jugador</string>
     <string name="coins">Monedes</string>
     <string name="spin">Girar</string>
@@ -32,8 +32,8 @@
     <string name="no_games_yet">Encara no hi ha partides.</string>
     <string name="score_row">%1$d. %2$s - %3$d monedes</string>
 
-    <string name="permission_location_granted">Permís d’ubicació concedit</string>
-    <string name="permission_location_denied">Permís d’ubicació denegat</string>
+    <string name="permission_location_granted">Permís d\'ubicació concedit</string>
+    <string name="permission_location_denied">Permís d\'ubicació denegat</string>
     <string name="permission_notifications_granted">Permís de notificacions concedit</string>
     <string name="permission_notifications_denied">Permís de notificacions denegat</string>
 
@@ -74,7 +74,7 @@
     <string name="manque_lower">manque</string>
 
     <string name="no_coins_cd">Sense monedes</string>
-    <string name="no_coins_message">T’has quedat sense monedes</string>
+    <string name="no_coins_message">T\'has quedat sense monedes</string>
 
     <string name="db_save_error">Error en desar la partida</string>
 
@@ -95,4 +95,68 @@
     <string name="accept">Acceptar</string>
     <string name="resolution_time">Temps de resolució</string>
     <string name="game_duration">La partida ha durat %1$s</string>
+
+    <string name="help_no_coins_title">Qué ocurre cuando te quedas sin monedas</string>
+    <string name="help_no_coins_text">Si te quedas sin monedas, la partida finaliza y ya no puedes seguir apostando. En ese momento se muestra el resultado final y puedes volver al menú para empezar una nueva partida o consultar el historial.</string>
+
+    <string name="help_save_games_title">Cómo se guardan las partidas</string>
+    <string name="help_save_games_text">Al finalizar una partida, sus datos se guardan en la base de datos local del dispositivo. De esta forma, la aplicación puede mostrar más tarde el historial de partidas y conservar la información entre diferentes usos de la app.</string>
+
+    <string name="help_location_title">Ubicación en el historial</string>
+    <string name="help_location_text">Si el usuario concede permiso de ubicación, la aplicación puede guardar la localización aproximada de la partida junto con el resto de datos. Esa información puede consultarse después desde el historial.</string>
+
+    <string name="help_notification_title">Notificación de victoria</string>
+    <string name="help_notification_text">Si ganas una partida, la aplicación mostrará una notificación de Android. Desde esa notificación se puede consultar el tiempo que ha durado la partida.</string>
+
+    <string name="help_lang_code">ca</string>
+    <string name="help_page_title">Ajuda - Ruleta</string>
+    <string name="help_title">Ajuda del joc</string>
+    <string name="help_image_alt">Imatge de la ruleta</string>
+
+    <string name="help_intro">En aquesta secció pots consultar ràpidament com funciona l\'aplicació, quins tipus d\'apostes hi ha disponibles i com aprofitar millor les teves monedes durant la partida.</string>
+
+    <string name="help_objective_title">Objectiu</string>
+    <string name="help_objective_text">L\'objectiu del joc és apostar les teves monedes a cada tirada i intentar acabar amb la quantitat més alta possible. Com millors siguin les teves decisions, millor podrà ser la teva puntuació final.</string>
+
+    <string name="help_navigation_title">Pantalles de l\'aplicació</string>
+    <string name="help_navigation_home_label">Pantalla principal:</string>
+    <string name="help_navigation_home_text">des d\'aquí pots començar una nova partida, consultar l\'historial i accedir a altres opcions de l\'aplicació.</string>
+    <string name="help_navigation_game_label">Pantalla de joc:</string>
+    <string name="help_navigation_game_text">aquesta és la zona on fas les apostes, gires la ruleta i veus el resultat de cada tirada.</string>
+    <string name="help_navigation_history_label">Historial:</string>
+    <string name="help_navigation_history_text">mostra les partides desades anteriorment perquè puguis revisar resultats i comparar puntuacions.</string>
+    <string name="help_navigation_settings_label">Ajustos i idioma:</string>
+    <string name="help_navigation_settings_text">permet adaptar l\'aplicació al teu idioma o a altres preferències disponibles.</string>
+
+    <string name="help_how_to_play_title">Com jugar</string>
+    <string name="help_how_to_play_step_1">Introdueix el nom del jugador abans de començar la partida.</string>
+    <string name="help_how_to_play_step_2">Consulta les monedes disponibles abans de fer una aposta.</string>
+    <string name="help_how_to_play_step_3">Selecciona el tipus d\'aposta que vols fer.</string>
+    <string name="help_how_to_play_step_4">Prem el botó per fer girar la ruleta i espera el resultat.</string>
+    <string name="help_how_to_play_step_5">Segons el resultat, guanyaràs o perdràs monedes i podràs continuar jugant fins que la partida acabi.</string>
+
+    <string name="help_bets_title">Tipus d\'aposta</string>
+    <string name="help_bet_red_black_title">Vermell / Negre:</string>
+    <string name="help_bet_red_black_text">guanyes si el color obtingut coincideix amb el color que has triat.</string>
+    <string name="help_bet_even_odd_title">Parell / Senar:</string>
+    <string name="help_bet_even_odd_text">guanyes si el número resultant té la paritat seleccionada.</string>
+    <string name="help_bet_exact_title">Número exacte:</string>
+    <string name="help_bet_exact_text">ofereix un premi més alt, però és l\'opció més difícil d\'encertar.</string>
+
+    <string name="help_coins_title">Monedes i estratègia</string>
+    <string name="help_coins_text">Les monedes representen el teu saldo durant la partida. Cada aposta afecta directament aquest saldo, així que convé decidir amb cura quant vols arriscar i en quin moment fer-ho.</string>
+    <string name="help_tip_label">Consell:</string>
+    <string name="help_coins_tip">si apostes de manera impulsiva, et pots quedar sense monedes ràpidament. Jugar amb equilibri sol donar millors resultats a llarg termini.</string>
+
+    <string name="help_history_title">Historial de partides</string>
+    <string name="help_history_text">L\'historial et permet consultar partides anteriors desades al dispositiu. És útil per veure la teva evolució i comparar les teves millors puntuacions.</string>
+
+    <string name="help_recommendations_title">Recomanacions d\'ús</string>
+    <string name="help_recommendations_1">Llegeix amb atenció els textos de cada pantalla abans de jugar per primera vegada.</string>
+    <string name="help_recommendations_2">Revisa les teves monedes abans de cada tirada per no fer apostes sense marge.</string>
+    <string name="help_recommendations_3">Consulta l\'historial al final de cada partida per comparar els teus resultats.</string>
+
+    <string name="help_footer">Ruleta - pantalla d\'ajuda</string>
+
+
 </resources>

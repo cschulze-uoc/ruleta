@@ -96,4 +96,67 @@
     <string name="resolution_time">Resolution time</string>
     <string name="game_duration">The game lasted %1$s</string>
 
+
+    <string name="help_lang_code">en</string>
+    <string name="help_page_title">Help - Roulette</string>
+    <string name="help_title">Game help</string>
+    <string name="help_image_alt">Roulette image</string>
+
+    <string name="help_intro">In this section you can quickly check how the application works, what betting types are available, and how to make better use of your coins during the game.</string>
+
+    <string name="help_objective_title">Objective</string>
+    <string name="help_objective_text">The objective of the game is to bet your coins on each spin and try to finish with the highest possible amount. The better your decisions, the better your final score can be.</string>
+
+    <string name="help_navigation_title">Application screens</string>
+    <string name="help_navigation_home_label">Home screen:</string>
+    <string name="help_navigation_home_text">from here you can start a new game, check the history, and access other options in the application.</string>
+    <string name="help_navigation_game_label">Game screen:</string>
+    <string name="help_navigation_game_text">this is where you place bets, spin the wheel, and see the result of each round.</string>
+    <string name="help_navigation_history_label">History:</string>
+    <string name="help_navigation_history_text">shows previously saved games so you can review results and compare scores.</string>
+    <string name="help_navigation_settings_label">Settings and language:</string>
+    <string name="help_navigation_settings_text">allows you to adapt the application to your language or other available preferences.</string>
+
+    <string name="help_how_to_play_title">How to play</string>
+    <string name="help_how_to_play_step_1">Enter the player name before starting the game.</string>
+    <string name="help_how_to_play_step_2">Check your available coins before placing a bet.</string>
+    <string name="help_how_to_play_step_3">Select the type of bet you want to place.</string>
+    <string name="help_how_to_play_step_4">Press the button to spin the wheel and wait for the result.</string>
+    <string name="help_how_to_play_step_5">Depending on the result, you will win or lose coins and can continue playing until the game ends.</string>
+
+    <string name="help_bets_title">Bet types</string>
+    <string name="help_bet_red_black_title">Red / Black:</string>
+    <string name="help_bet_red_black_text">you win if the resulting color matches the one you selected.</string>
+    <string name="help_bet_even_odd_title">Even / Odd:</string>
+    <string name="help_bet_even_odd_text">you win if the resulting number matches the selected parity.</string>
+    <string name="help_bet_exact_title">Exact number:</string>
+    <string name="help_bet_exact_text">offers a higher reward, but it is the hardest option to hit.</string>
+
+    <string name="help_coins_title">Coins and strategy</string>
+    <string name="help_coins_text">Coins represent your balance during the game. Every bet directly affects that balance, so it is a good idea to decide carefully how much to risk and when to do it.</string>
+    <string name="help_tip_label">Tip:</string>
+    <string name="help_coins_tip">if you bet impulsively, you may run out of coins quickly. Playing with balance usually gives better long-term results.</string>
+
+    <string name="help_history_title">Game history</string>
+    <string name="help_history_text">The history lets you review previously saved games on the device. It is useful for tracking your progress and comparing your best scores.</string>
+
+    <string name="help_recommendations_title">Usage recommendations</string>
+    <string name="help_recommendations_1">Read each screen carefully before playing for the first time.</string>
+    <string name="help_recommendations_2">Check your coins before every spin so you do not place risky bets without margin.</string>
+    <string name="help_recommendations_3">Review the history at the end of each game to compare your results.</string>
+
+    <string name="help_footer">Roulette - help screen</string>
+
+    <string name="help_no_coins_title">What happens when you run out of coins</string>
+    <string name="help_no_coins_text">If you run out of coins, the game ends, and you can no longer place bets. At that moment the final result is shown, and you can return to the menu to start a new game or check the history.</string>
+
+    <string name="help_save_games_title">How games are saved</string>
+    <string name="help_save_games_text">When a game ends, its data is stored in the device\'s local database. This allows the application to show the game history later and keep the information between different uses of the app.</string>
+
+    <string name="help_location_title">Location in the history</string>
+    <string name="help_location_text">If the user grants location permission, the application can save the approximate location of the game together with the rest of the data. That information can later be viewed in the history section.</string>
+
+    <string name="help_notification_title">Win notification</string>
+    <string name="help_notification_text">If you win a game, the application will show an Android notification. From that notification, you can check how long the game lasted.</string>
+
 </resources>

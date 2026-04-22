@@ -95,4 +95,67 @@
     <string name="accept">Aceptar</string>
     <string name="resolution_time">Tiempo de resolución</string>
     <string name="game_duration">La partida ha durado %1$s</string>
+
+
+    <string name="help_lang_code">es</string>
+    <string name="help_page_title">Ayuda - Ruleta</string>
+    <string name="help_title">Ayuda del juego</string>
+    <string name="help_image_alt">Imagen de la ruleta</string>
+
+    <string name="help_intro">En esta sección puedes consultar de forma rápida cómo funciona la aplicación, qué tipos de apuestas existen y cómo aprovechar mejor tus monedas durante la partida.</string>
+
+    <string name="help_objective_title">Objetivo</string>
+    <string name="help_objective_text">El objetivo del juego es apostar tus monedas en cada tirada e intentar terminar la partida con la mayor cantidad posible. Cuanto mejores sean tus decisiones, más opciones tendrás de mejorar tu puntuación final.</string>
+
+    <string name="help_navigation_title">Pantallas de la aplicación</string>
+    <string name="help_navigation_home_label">Pantalla principal:</string>
+    <string name="help_navigation_home_text">desde aquí puedes empezar una nueva partida, consultar el historial y acceder a otras opciones de la aplicación.</string>
+    <string name="help_navigation_game_label">Pantalla de juego:</string>
+    <string name="help_navigation_game_text">es la zona donde realizas tus apuestas, haces girar la ruleta y ves el resultado de cada tirada.</string>
+    <string name="help_navigation_history_label">Historial:</string>
+    <string name="help_navigation_history_text">muestra las partidas guardadas anteriormente para que puedas revisar resultados y comparar puntuaciones.</string>
+    <string name="help_navigation_settings_label">Ajustes e idioma:</string>
+    <string name="help_navigation_settings_text">permite adaptar la aplicación a tu idioma o a otras preferencias disponibles.</string>
+
+    <string name="help_how_to_play_title">Cómo jugar</string>
+    <string name="help_how_to_play_step_1">Introduce el nombre del jugador antes de comenzar la partida.</string>
+    <string name="help_how_to_play_step_2">Consulta tus monedas disponibles antes de hacer una apuesta.</string>
+    <string name="help_how_to_play_step_3">Selecciona el tipo de apuesta que quieras realizar.</string>
+    <string name="help_how_to_play_step_4">Pulsa el botón para girar la ruleta y espera el resultado.</string>
+    <string name="help_how_to_play_step_5">Según el resultado, ganarás o perderás monedas y podrás seguir jugando hasta finalizar la partida.</string>
+
+    <string name="help_bets_title">Tipos de apuesta</string>
+    <string name="help_bet_red_black_title">Rojo / Negro:</string>
+    <string name="help_bet_red_black_text">ganas si el color obtenido coincide con el color que has elegido.</string>
+    <string name="help_bet_even_odd_title">Par / Impar:</string>
+    <string name="help_bet_even_odd_text">ganas si el número resultante tiene la paridad seleccionada.</string>
+    <string name="help_bet_exact_title">Número exacto:</string>
+    <string name="help_bet_exact_text">ofrece un premio mayor, pero es la opción más difícil de acertar.</string>
+
+    <string name="help_coins_title">Monedas y estrategia</string>
+    <string name="help_coins_text">Las monedas representan tu saldo durante la partida. Cada apuesta afecta directamente a ese saldo, por lo que conviene decidir con cuidado cuánto arriesgar y en qué momento hacerlo.</string>
+    <string name="help_tip_label">Consejo:</string>
+    <string name="help_coins_tip">si apuestas de forma impulsiva puedes quedarte sin monedas rápidamente. Jugar con equilibrio suele dar mejores resultados a largo plazo.</string>
+
+    <string name="help_history_title">Historial de partidas</string>
+    <string name="help_history_text">El historial te permite consultar partidas anteriores guardadas en el dispositivo. Es útil para ver la evolución de tus resultados y comparar tus mejores puntuaciones.</string>
+
+    <string name="help_recommendations_title">Recomendaciones de uso</string>
+    <string name="help_recommendations_1">Lee con atención los textos de cada pantalla antes de jugar por primera vez.</string>
+    <string name="help_recommendations_2">Revisa tus monedas antes de cada tirada para no hacer apuestas sin margen.</string>
+    <string name="help_recommendations_3">Consulta el historial al final de cada partida para comparar tus resultados.</string>
+
+    <string name="help_footer">Ruleta - pantalla de ayuda</string>
+
+    <string name="help_no_coins_title">Qué ocurre cuando te quedas sin monedas</string>
+    <string name="help_no_coins_text">Si te quedas sin monedas, la partida termina y ya no puedes seguir apostando. En ese momento se muestra el resultado final y puedes volver al menú para empezar una nueva partida o consultar el historial.</string>
+
+    <string name="help_save_games_title">Cómo se guardan las partidas</string>
+    <string name="help_save_games_text">Cuando una partida termina, sus datos se guardan en la base de datos local del dispositivo. Esto permite que la aplicación pueda mostrar más adelante el historial de partidas y conservar la información entre distintos usos de la app.</string>
+
+    <string name="help_location_title">Ubicación en el historial</string>
+    <string name="help_location_text">Si el usuario concede permiso de ubicación, la aplicación puede guardar la localización aproximada de la partida junto con el resto de datos. Esa información se puede consultar más tarde en el historial.</string>
+
+    <string name="help_notification_title">Notificación de victoria</string>
+    <string name="help_notification_text">Si ganas una partida, la aplicación mostrará una notificación de Android. Desde esa notificación se puede consultar cuánto tiempo ha durado la partida.</string>
 </resources>
