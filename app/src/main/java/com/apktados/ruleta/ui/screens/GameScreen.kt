@@ -56,16 +56,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.layout.ContentScale
 import com.apktados.ruleta.data.PartidasRepository
 import com.apktados.ruleta.location.locationHelper
 import com.apktados.ruleta.ui.bars.RuletaTopBar
 import android.Manifest
 import android.content.pm.PackageManager
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import android.graphics.Bitmap
 import android.view.View
@@ -74,6 +71,7 @@ import androidx.core.view.drawToBitmap
 import android.content.Intent
 import android.net.Uri
 import java.io.OutputStream
+import com.apktados.ruleta.notification.NotificationHelper
 
 @Composable
 public fun GameScreen(
@@ -142,46 +140,23 @@ public fun GameScreen(
     val casinoGreenDark = Color(0xFF1B5E20)
     val casinoBrown = Color(0xFF6D4C41)
 
+    val inicioPartida = remember { System.currentTimeMillis() }
+
     val locationHelper = locationHelper(context)
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
-        val coarseGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
 
-        if (fineGranted || coarseGranted) {
-            scope.launch {
-                val location = locationHelper.obtenerUbicacionActual()
-                val disposable = repo.guardarPartida(
-                    jugador = jugador,
-                    monedasFinales = monedas,
-                    lat = location?.latitude,
-                    lon = location?.longitude
-                )
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        { partidaFinalizada = true },
-                        { error -> Log.e("DB", "Error guardando partida", error) }
-                    )
-
-                disposables.add(disposable)
-            }
-        } else {
-            Log.e("LOC", "Permiso de ubicación denegado")
-        }
-    }
 
     Scaffold(
         topBar = {
+
             RuletaTopBar(
-                titulo = "Ruleta",
+                titulo = stringResource(R.string.roulette_title),
                 onBack = { navController.popBackStack() },
                 onNavigateHome = { navController.navigate("home") },
                 onNavigateRanking = {
                     navController.navigate("history")
                 },
-                onNavigateGame = {}
+                onNavigateGame = {},
+                onNavigateHelp = {navController.navigate("help")}
             )
         }
     ) { padding ->
@@ -227,13 +202,13 @@ public fun GameScreen(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text(
-                                    "PARTIDA FINALIZADA",
+                                    stringResource(R.string.game_finished),
                                     color = gold,
                                     fontWeight = FontWeight.Bold,
                                     style = MaterialTheme.typography.titleLarge
                                 )
                                 Text(
-                                    "Monedas finales: $monedas",
+                                    stringResource(R.string.final_coins, monedas),
                                     color = Color.White,
                                     style = MaterialTheme.typography.titleMedium
                                 )
@@ -251,7 +226,7 @@ public fun GameScreen(
                                     ),
                                     border = BorderStroke(2.dp, gold)
                                 ) {
-                                    Text("Volver al menú", fontWeight = FontWeight.Bold)
+                                    Text(stringResource(R.string.back_to_menu), fontWeight = FontWeight.Bold)
                                 }
 
                                 if (retiradaVoluntaria) {
@@ -297,16 +272,16 @@ public fun GameScreen(
                                 verticalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 Text(
-                                    "Jugador: $jugador",
+                                    stringResource(R.string.player_label, jugador),
                                     color = Color.White,
                                     fontWeight = FontWeight.Bold
                                 )
-                                Text("Monedas: $monedas", color = Color.White)
-                                Text("Apostado: $apuestaTotal", color = Color.White)
+                                Text(stringResource(R.string.coins_label, monedas), color = Color.White)
+                                Text(stringResource(R.string.bet_total_label, apuestaTotal), color = Color.White)
 
                                 if (girando) {
                                     Text(
-                                        "Girando…",
+                                        stringResource(R.string.spinning),
                                         color = gold,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -322,7 +297,7 @@ public fun GameScreen(
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.ruleta2),
-                                contentDescription = "Ruleta",
+                                contentDescription = stringResource(R.string.roulette_image),
                                 modifier = Modifier
                                     .size(200.dp)
                                     .graphicsLayer(rotationZ = rotation.value)
@@ -351,14 +326,14 @@ public fun GameScreen(
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 Text(
-                                    "APUESTAS",
+                                    stringResource(R.string.bets_title),
                                     color = gold,
                                     fontWeight = FontWeight.Bold,
                                     style = MaterialTheme.typography.titleMedium
                                 )
 
                                 Text(
-                                    "Color",
+                                    stringResource(R.string.bet_color),
                                     color = Color.White,
                                     fontWeight = FontWeight.SemiBold
                                 )
@@ -382,7 +357,7 @@ public fun GameScreen(
                                             contentColor = Color.White
                                         ),
                                         shape = RoundedCornerShape(16.dp)
-                                    ) { Text("Rojo") }
+                                    ) { Text(stringResource(R.string.red)) }
 
                                     Button(
                                         onClick = {
@@ -399,7 +374,7 @@ public fun GameScreen(
                                             contentColor = Color.White
                                         ),
                                         shape = RoundedCornerShape(16.dp)
-                                    ) { Text("Negro") }
+                                    ) { Text(stringResource(R.string.black)) }
 
                                     Spacer(modifier = Modifier.width(16.dp))
 
@@ -433,7 +408,7 @@ public fun GameScreen(
                                 }
 
                                 Text(
-                                    "Paridad",
+                                    stringResource(R.string.bet_parity),
                                     color = Color.White,
                                     fontWeight = FontWeight.SemiBold
                                 )
@@ -457,7 +432,7 @@ public fun GameScreen(
                                             contentColor = Color.White
                                         ),
                                         shape = RoundedCornerShape(16.dp)
-                                    ) { Text("Par") }
+                                    ) { Text(stringResource(R.string.even)) }
 
                                     Button(
                                         onClick = {
@@ -474,7 +449,7 @@ public fun GameScreen(
                                             contentColor = Color.White
                                         ),
                                         shape = RoundedCornerShape(16.dp)
-                                    ) { Text("Impar") }
+                                    ) { Text(stringResource(R.string.odd)) }
 
                                     Spacer(modifier = Modifier.width(16.dp))
 
@@ -508,7 +483,7 @@ public fun GameScreen(
                                 }
 
                                 Text(
-                                    "Mitad",
+                                    stringResource(R.string.bet_half),
                                     color = Color.White,
                                     fontWeight = FontWeight.SemiBold
                                 )
@@ -532,7 +507,7 @@ public fun GameScreen(
                                             contentColor = Color.White
                                         ),
                                         shape = RoundedCornerShape(16.dp)
-                                    ) { Text("Manque") }
+                                    ) { Text(stringResource(R.string.manque)) }
 
                                     Button(
                                         onClick = {
@@ -549,7 +524,7 @@ public fun GameScreen(
                                             contentColor = Color.White
                                         ),
                                         shape = RoundedCornerShape(16.dp)
-                                    ) { Text("Passe") }
+                                    ) { Text(stringResource(R.string.passe)) }
 
                                     Spacer(modifier = Modifier.width(16.dp))
 
@@ -666,7 +641,7 @@ public fun GameScreen(
                                     border = BorderStroke(2.dp, gold)
                                 ) {
                                     Text(
-                                        "Girar ruleta",
+                                        stringResource(R.string.spin_roulette),
                                         color = Color.White,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -690,29 +665,24 @@ public fun GameScreen(
                                         if (fineGranted || coarseGranted) {
                                             scope.launch {
                                                 val location = locationHelper.obtenerUbicacionActual()
-
+                                                val tiempoResolucionMs = System.currentTimeMillis() - inicioPartida
                                                 val disposable = repo.guardarPartida(
                                                     jugador = jugador,
                                                     monedasFinales = monedas,
                                                     lat = location?.latitude,
-                                                    lon = location?.longitude
+                                                    lon = location?.longitude,
+                                                    tiempo = tiempoResolucionMs
                                                 )
                                                     .subscribeOn(Schedulers.io())
                                                     .observeOn(AndroidSchedulers.mainThread())
                                                     .subscribe(
                                                         { partidaFinalizada = true },
-                                                        { error -> Log.e("DB", "Error guardando partida", error) }
+                                                        { error -> Log.e("DB", context.getString(R.string.db_save_error), error) }
                                                     )
 
                                                 disposables.add(disposable)
+                                                NotificationHelper.mostrarVictoria(context, tiempoResolucionMs)
                                             }
-                                        } else {
-                                            permissionLauncher.launch(
-                                                arrayOf(
-                                                    Manifest.permission.ACCESS_FINE_LOCATION,
-                                                    Manifest.permission.ACCESS_COARSE_LOCATION
-                                                )
-                                            )
                                         }
                                     },
                                     enabled = monedas > 0 && !partidaFinalizada,
@@ -723,7 +693,7 @@ public fun GameScreen(
                                         contentColor = Color.White
                                     )
                                 ) {
-                                    Text(text = "Retirarse", fontWeight = FontWeight.Bold)
+                                    Text(text = stringResource(R.string.retire), fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -732,21 +702,21 @@ public fun GameScreen(
                         resultado?.let {
 
                             val color = if (ApuestaEvaluator.esGanadora(TipoApuesta.ROJO, it))
-                                "rojo"
+                                stringResource(R.string.red_lower)
                             else if (ApuestaEvaluator.esGanadora(TipoApuesta.NEGRO, it))
-                                "negro"
+                                stringResource(R.string.black_lower)
                             else
-                                "verde"
+                                stringResource(R.string.green)
 
                             val paridad = if (ApuestaEvaluator.esGanadora(TipoApuesta.PAR, it))
-                                "par"
+                                stringResource(R.string.even_lower)
                             else
-                                "impar"
+                                stringResource(R.string.odd_lower)
 
                             val mitad = if (ApuestaEvaluator.esGanadora(TipoApuesta.PASSE, it))
-                                "passe"
+                                stringResource(R.string.passe_lower)
                             else
-                                "manque"
+                                stringResource(R.string.manque_lower)
 
                             Spacer(modifier = Modifier.height(16.dp))
 
@@ -765,7 +735,7 @@ public fun GameScreen(
                                     .padding(16.dp)
                             ) {
                                 Text(
-                                    text = "Resultado: ${it.numero} ($color, $paridad, $mitad)",
+                                    text = stringResource(R.string.result_text, it.numero, color, paridad, mitad),
                                     color = Color.White,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -777,14 +747,14 @@ public fun GameScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = "Sin monedas",
+                                    contentDescription = stringResource(R.string.no_coins_cd),
                                     tint = Color.Red
                                 )
 
                                 Spacer(modifier = Modifier.width(8.dp))
 
                                 Text(
-                                    "Te has quedado sin monedas",
+                                    stringResource(R.string.no_coins_message),
                                     color = Color.White
                                 )
                             }

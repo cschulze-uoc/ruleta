@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.apktados.ruleta"
-        minSdk = 30
+        minSdk = 33
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -58,8 +58,11 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    implementation("io.reactivex.rxjava3:rxjava:3.1.12")
-    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
-    implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.lifecycle:lifecycle-process:2.7.0")
+    implementation(libs.rxjava)
+    implementation(libs.rxandroid)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.lifecycle.process)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+
 }

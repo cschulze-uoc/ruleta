@@ -11,7 +11,8 @@ class PartidasDao(private val dbHelper: RuletaDbHelper) {
         jugador: String,
         monedasFinales: Int,
         latitud: Double? = null,
-        longitud: Double? = null
+        longitud: Double? = null,
+        tiempoResolucionMs: Long
     ): Long {
 
         val db = dbHelper.writableDatabase
@@ -22,6 +23,7 @@ class PartidasDao(private val dbHelper: RuletaDbHelper) {
             put(RuletaContract.Partidas.COLUMN_MONEDAS_FINALES, monedasFinales)
             if (latitud != null) put(RuletaContract.Partidas.COLUMN_LATITUD, latitud)
             if (longitud != null) put(RuletaContract.Partidas.COLUMN_LONGITUD, longitud)
+            put(RuletaContract.Partidas.COLUMN_TIEMPO_RESOLUCION, tiempoResolucionMs)
         }
 
         // Devuelve id de la fila o -1 si error
@@ -37,7 +39,8 @@ class PartidasDao(private val dbHelper: RuletaDbHelper) {
             RuletaContract.Partidas.COLUMN_JUGADOR,
             RuletaContract.Partidas.COLUMN_MONEDAS_FINALES,
             RuletaContract.Partidas.COLUMN_LATITUD,
-            RuletaContract.Partidas.COLUMN_LONGITUD
+            RuletaContract.Partidas.COLUMN_LONGITUD,
+            RuletaContract.Partidas.COLUMN_TIEMPO_RESOLUCION,
         )
 
         val sortOrder = "${RuletaContract.Partidas.COLUMN_MONEDAS_FINALES} DESC"
@@ -65,7 +68,8 @@ class PartidasDao(private val dbHelper: RuletaDbHelper) {
             RuletaContract.Partidas.COLUMN_JUGADOR,
             RuletaContract.Partidas.COLUMN_MONEDAS_FINALES,
             RuletaContract.Partidas.COLUMN_LATITUD,
-            RuletaContract.Partidas.COLUMN_LONGITUD
+            RuletaContract.Partidas.COLUMN_LONGITUD,
+            RuletaContract.Partidas.COLUMN_TIEMPO_RESOLUCION
         )
 
         val sortOrder = "${RuletaContract.Partidas.COLUMN_FECHA} DESC"
@@ -92,6 +96,7 @@ class PartidasDao(private val dbHelper: RuletaDbHelper) {
         val idxMonedas = getColumnIndexOrThrow(RuletaContract.Partidas.COLUMN_MONEDAS_FINALES)
         val idxLat = getColumnIndexOrThrow(RuletaContract.Partidas.COLUMN_LATITUD)
         val idxLon = getColumnIndexOrThrow(RuletaContract.Partidas.COLUMN_LONGITUD)
+        val idxTiempo = getColumnIndexOrThrow(RuletaContract.Partidas.COLUMN_TIEMPO_RESOLUCION)
 
         while (moveToNext()) {
             res.add(
@@ -101,7 +106,8 @@ class PartidasDao(private val dbHelper: RuletaDbHelper) {
                     jugador = getString(idxJugador),
                     monedasFinales = getInt(idxMonedas),
                     latitud = if (isNull(idxLat)) null else getDouble(idxLat),
-                    longitud = if (isNull(idxLon)) null else getDouble(idxLon)
+                    longitud = if (isNull(idxLon)) null else getDouble(idxLon),
+                    tiempoResolucionMs = getLong(idxTiempo)
                 )
             )
         }

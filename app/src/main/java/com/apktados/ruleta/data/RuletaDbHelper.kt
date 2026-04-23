@@ -28,7 +28,8 @@ class RuletaDbHelper(context: Context) :
                     "${RuletaContract.Partidas.COLUMN_JUGADOR} TEXT NOT NULL," +
                     "${RuletaContract.Partidas.COLUMN_MONEDAS_FINALES} INTEGER NOT NULL," +
                     "${RuletaContract.Partidas.COLUMN_LATITUD} REAL," +
-                    "${RuletaContract.Partidas.COLUMN_LONGITUD} REAL" +
+                    "${RuletaContract.Partidas.COLUMN_LONGITUD} REAL," +
+                    "${RuletaContract.Partidas.COLUMN_TIEMPO_RESOLUCION} INTEGER NOT NULL" +
                     ")"
 
         private const val SQL_DELETE_PARTIDAS =

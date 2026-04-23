@@ -31,5 +31,9 @@ fun RuletaNavGraph() {
         composable("history") {
             HistoryScreen(navController)
         }
+
+        composable("help") {
+            HelpScreen(navController)
+        }
     }
 }

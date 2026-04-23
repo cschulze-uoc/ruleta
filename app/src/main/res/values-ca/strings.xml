@@ -1,0 +1,162 @@
+<resources>
+    <string name="app_name">Ruleta</string>
+    <string name="new_game">Nova partida</string>
+    <string name="history">Historial</string>
+    <string name="settings">Configuració</string>
+    <string name="select_language">Selecciona l\'idioma</string>
+    <string name="player_name">Nom del jugador</string>
+    <string name="coins">Monedes</string>
+    <string name="spin">Girar</string>
+    <string name="back">Tornar</string>
+    <string name="menu">Menú</string>
+    <string name="home">Inici</string>
+    <string name="ranking">Rànquing</string>
+    <string name="game">Joc</string>
+    <string name="help">Ajuda</string>
+    <string name="language_system">Idioma del sistema</string>
+    <string name="language_spanish">Espanyol</string>
+    <string name="language_english">Anglès</string>
+    <string name="language_catalan">Català</string>
+    <string name="language_french">Francès</string>
+
+    <string name="topbar_title">APKtados</string>
+    <string name="background_casino">Fons casino</string>
+    <string name="home_title">Ruleta</string>
+
+    <string name="music_on">Música ON</string>
+    <string name="music_off">Música OFF</string>
+    <string name="choose_music">Escollir música</string>
+
+    <string name="best_scores">Millors puntuacions</string>
+    <string name="loading">Carregant…</string>
+    <string name="no_games_yet">Encara no hi ha partides.</string>
+    <string name="score_row">%1$d. %2$s - %3$d monedes</string>
+
+    <string name="permission_location_granted">Permís d\'ubicació concedit</string>
+    <string name="permission_location_denied">Permís d\'ubicació denegat</string>
+    <string name="permission_notifications_granted">Permís de notificacions concedit</string>
+    <string name="permission_notifications_denied">Permís de notificacions denegat</string>
+
+    <string name="cd_best_scores">Millors puntuacions</string>
+
+    <string name="roulette_title">Ruleta</string>
+    <string name="game_finished">PARTIDA FINALITZADA</string>
+    <string name="final_coins">Monedes finals: %1$d</string>
+    <string name="back_to_menu">Tornar al menú</string>
+
+    <string name="player_label">Jugador: %1$s</string>
+    <string name="coins_label">Monedes: %1$d</string>
+    <string name="bet_total_label">Apostat: %1$d</string>
+    <string name="spinning">Girant…</string>
+
+    <string name="roulette_image">Ruleta</string>
+    <string name="bets_title">APOSTES</string>
+    <string name="bet_color">Color</string>
+    <string name="red">Vermell</string>
+    <string name="black">Negre</string>
+    <string name="bet_parity">Paritat</string>
+    <string name="even">Parell</string>
+    <string name="odd">Senar</string>
+    <string name="bet_half">Meitat</string>
+    <string name="manque">Manque</string>
+    <string name="passe">Passe</string>
+
+    <string name="spin_roulette">Girar ruleta</string>
+    <string name="retire">Retirar-se</string>
+
+    <string name="result_text">Resultat: %1$d (%2$s, %3$s, %4$s)</string>
+    <string name="green">verd</string>
+    <string name="red_lower">vermell</string>
+    <string name="black_lower">negre</string>
+    <string name="even_lower">parell</string>
+    <string name="odd_lower">senar</string>
+    <string name="passe_lower">passe</string>
+    <string name="manque_lower">manque</string>
+
+    <string name="no_coins_cd">Sense monedes</string>
+    <string name="no_coins_message">T\'has quedat sense monedes</string>
+
+    <string name="db_save_error">Error en desar la partida</string>
+
+    <string name="history_read_error">Error en llegir l\'historial</string>
+    <string name="history_title_upper">HISTORIAL</string>
+    <string name="loading_history">Carregant historial…</string>
+    <string name="error_prefix">Error: %1$s</string>
+    <string name="no_saved_games">Encara no hi ha partides desades.</string>
+    <string name="saved_games_count">Partides desades: %1$d</string>
+
+    <string name="player_row">Jugador: %1$s</string>
+    <string name="final_coins_row">Monedes finals: %1$d</string>
+    <string name="date_row">Data: %1$s</string>
+    <string name="location_row">Ubicació: %1$s, %2$s</string>
+    <string name="time_seconds_row">Temps: %1$s</string>
+    <string name="casino_background">Fons casino</string>
+
+    <string name="accept">Acceptar</string>
+    <string name="resolution_time">Temps de resolució</string>
+    <string name="game_duration">La partida ha durat %1$s</string>
+
+    <string name="help_no_coins_title">Qué ocurre cuando te quedas sin monedas</string>
+    <string name="help_no_coins_text">Si te quedas sin monedas, la partida finaliza y ya no puedes seguir apostando. En ese momento se muestra el resultado final y puedes volver al menú para empezar una nueva partida o consultar el historial.</string>
+
+    <string name="help_save_games_title">Cómo se guardan las partidas</string>
+    <string name="help_save_games_text">Al finalizar una partida, sus datos se guardan en la base de datos local del dispositivo. De esta forma, la aplicación puede mostrar más tarde el historial de partidas y conservar la información entre diferentes usos de la app.</string>
+
+    <string name="help_location_title">Ubicación en el historial</string>
+    <string name="help_location_text">Si el usuario concede permiso de ubicación, la aplicación puede guardar la localización aproximada de la partida junto con el resto de datos. Esa información puede consultarse después desde el historial.</string>
+
+    <string name="help_notification_title">Notificación de victoria</string>
+    <string name="help_notification_text">Si ganas una partida, la aplicación mostrará una notificación de Android. Desde esa notificación se puede consultar el tiempo que ha durado la partida.</string>
+
+    <string name="help_lang_code">ca</string>
+    <string name="help_page_title">Ajuda - Ruleta</string>
+    <string name="help_title">Ajuda del joc</string>
+    <string name="help_image_alt">Imatge de la ruleta</string>
+
+    <string name="help_intro">En aquesta secció pots consultar ràpidament com funciona l\'aplicació, quins tipus d\'apostes hi ha disponibles i com aprofitar millor les teves monedes durant la partida.</string>
+
+    <string name="help_objective_title">Objectiu</string>
+    <string name="help_objective_text">L\'objectiu del joc és apostar les teves monedes a cada tirada i intentar acabar amb la quantitat més alta possible. Com millors siguin les teves decisions, millor podrà ser la teva puntuació final.</string>
+
+    <string name="help_navigation_title">Pantalles de l\'aplicació</string>
+    <string name="help_navigation_home_label">Pantalla principal:</string>
+    <string name="help_navigation_home_text">des d\'aquí pots començar una nova partida, consultar l\'historial i accedir a altres opcions de l\'aplicació.</string>
+    <string name="help_navigation_game_label">Pantalla de joc:</string>
+    <string name="help_navigation_game_text">aquesta és la zona on fas les apostes, gires la ruleta i veus el resultat de cada tirada.</string>
+    <string name="help_navigation_history_label">Historial:</string>
+    <string name="help_navigation_history_text">mostra les partides desades anteriorment perquè puguis revisar resultats i comparar puntuacions.</string>
+    <string name="help_navigation_settings_label">Ajustos i idioma:</string>
+    <string name="help_navigation_settings_text">permet adaptar l\'aplicació al teu idioma o a altres preferències disponibles.</string>
+
+    <string name="help_how_to_play_title">Com jugar</string>
+    <string name="help_how_to_play_step_1">Introdueix el nom del jugador abans de començar la partida.</string>
+    <string name="help_how_to_play_step_2">Consulta les monedes disponibles abans de fer una aposta.</string>
+    <string name="help_how_to_play_step_3">Selecciona el tipus d\'aposta que vols fer.</string>
+    <string name="help_how_to_play_step_4">Prem el botó per fer girar la ruleta i espera el resultat.</string>
+    <string name="help_how_to_play_step_5">Segons el resultat, guanyaràs o perdràs monedes i podràs continuar jugant fins que la partida acabi.</string>
+
+    <string name="help_bets_title">Tipus d\'aposta</string>
+    <string name="help_bet_red_black_title">Vermell / Negre:</string>
+    <string name="help_bet_red_black_text">guanyes si el color obtingut coincideix amb el color que has triat.</string>
+    <string name="help_bet_even_odd_title">Parell / Senar:</string>
+    <string name="help_bet_even_odd_text">guanyes si el número resultant té la paritat seleccionada.</string>
+    <string name="help_bet_exact_title">Número exacte:</string>
+    <string name="help_bet_exact_text">ofereix un premi més alt, però és l\'opció més difícil d\'encertar.</string>
+
+    <string name="help_coins_title">Monedes i estratègia</string>
+    <string name="help_coins_text">Les monedes representen el teu saldo durant la partida. Cada aposta afecta directament aquest saldo, així que convé decidir amb cura quant vols arriscar i en quin moment fer-ho.</string>
+    <string name="help_tip_label">Consell:</string>
+    <string name="help_coins_tip">si apostes de manera impulsiva, et pots quedar sense monedes ràpidament. Jugar amb equilibri sol donar millors resultats a llarg termini.</string>
+
+    <string name="help_history_title">Historial de partides</string>
+    <string name="help_history_text">L\'historial et permet consultar partides anteriors desades al dispositiu. És útil per veure la teva evolució i comparar les teves millors puntuacions.</string>
+
+    <string name="help_recommendations_title">Recomanacions d\'ús</string>
+    <string name="help_recommendations_1">Llegeix amb atenció els textos de cada pantalla abans de jugar per primera vegada.</string>
+    <string name="help_recommendations_2">Revisa les teves monedes abans de cada tirada per no fer apostes sense marge.</string>
+    <string name="help_recommendations_3">Consulta l\'historial al final de cada partida per comparar els teus resultats.</string>
+
+    <string name="help_footer">Ruleta - pantalla d\'ajuda</string>
+
+
+</resources>
