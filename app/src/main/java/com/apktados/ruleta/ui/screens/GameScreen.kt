@@ -64,6 +64,13 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
+import android.graphics.Bitmap
+import android.view.View
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.drawToBitmap
+import android.content.Intent
+import android.net.Uri
+import java.io.OutputStream
 import com.apktados.ruleta.notification.NotificationHelper
 
 @Composable
@@ -71,6 +78,8 @@ public fun GameScreen(
     jugador: String,
     navController: NavController
 ) {
+    val view = LocalView.current
+
     val rotation = remember { Animatable(0f) }
     var girando by remember { mutableStateOf(false) }
 
@@ -96,22 +105,30 @@ public fun GameScreen(
     var resultado by remember { mutableStateOf<ResultadoRuleta?>(null) }
 
     var partidaFinalizada by remember { mutableStateOf(false) }
+    var retiradaVoluntaria by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val repo = remember { PartidasRepository(context) }
     val scope = rememberCoroutineScope()
 
-    //val musicManager = remember { com.apktados.ruleta.audio.MusicManager(context) }
-
-    /*LaunchedEffect(Unit) {
-        musicManager.startDefaultMusic()
-    }*/
-
     val disposables = remember { CompositeDisposable() }
     DisposableEffect(Unit) {
         onDispose {
             disposables.clear()
-            //musicManager.release()
+        }
+    }
+
+    val saveLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("image/png")
+    ) { uri: Uri? ->
+        if (uri != null) {
+            val bitmap = view.drawToBitmap()
+            val stream: OutputStream? =
+                context.contentResolver.openOutputStream(uri)
+
+            stream?.use {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+            }
         }
     }
 
@@ -210,6 +227,16 @@ public fun GameScreen(
                                     border = BorderStroke(2.dp, gold)
                                 ) {
                                     Text(stringResource(R.string.back_to_menu), fontWeight = FontWeight.Bold)
+                                }
+
+                                if (retiradaVoluntaria) {
+                                    Button(
+                                        onClick = {
+                                            saveLauncher.launch("ruleta_resultado.png")
+                                        }
+                                    ) {
+                                        Text("Guardar captura")
+                                    }
                                 }
                             }
                         }
@@ -622,6 +649,9 @@ public fun GameScreen(
 
                                 Button(
                                     onClick = {
+                                        retiradaVoluntaria = true
+                                        partidaFinalizada = true
+
                                         val fineGranted = ContextCompat.checkSelfPermission(
                                             context,
                                             Manifest.permission.ACCESS_FINE_LOCATION
