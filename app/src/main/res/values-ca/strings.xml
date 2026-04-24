@@ -140,8 +140,8 @@
     <string name="help_bet_red_black_text">guanyes si el color obtingut coincideix amb el color que has triat.</string>
     <string name="help_bet_even_odd_title">Parell / Senar:</string>
     <string name="help_bet_even_odd_text">guanyes si el número resultant té la paritat seleccionada.</string>
-    <string name="help_bet_exact_title">Número exacte:</string>
-    <string name="help_bet_exact_text">ofereix un premi més alt, però és l\'opció més difícil d\'encertar.</string>
+    <string name="help_bet_exact_title">Manque / Passe:</string>
+    <string name="help_bet_exact_text">guanyes si el número resultant coincideix amb la meitat escollida.</string>
 
     <string name="help_coins_title">Monedes i estratègia</string>
     <string name="help_coins_text">Les monedes representen el teu saldo durant la partida. Cada aposta afecta directament aquest saldo, així que convé decidir amb cura quant vols arriscar i en quin moment fer-ho.</string>

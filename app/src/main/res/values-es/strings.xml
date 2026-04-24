@@ -129,8 +129,8 @@
     <string name="help_bet_red_black_text">ganas si el color obtenido coincide con el color que has elegido.</string>
     <string name="help_bet_even_odd_title">Par / Impar:</string>
     <string name="help_bet_even_odd_text">ganas si el número resultante tiene la paridad seleccionada.</string>
-    <string name="help_bet_exact_title">Número exacto:</string>
-    <string name="help_bet_exact_text">ofrece un premio mayor, pero es la opción más difícil de acertar.</string>
+    <string name="help_bet_exact_title">Manque / Passe:</string>
+    <string name="help_bet_exact_text">ganas si el número resultante coincide con la mitad escogida.</string>
 
     <string name="help_coins_title">Monedas y estrategia</string>
     <string name="help_coins_text">Las monedas representan tu saldo durante la partida. Cada apuesta afecta directamente a ese saldo, por lo que conviene decidir con cuidado cuánto arriesgar y en qué momento hacerlo.</string>

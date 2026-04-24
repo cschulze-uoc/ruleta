@@ -118,7 +118,7 @@
     <string name="help_navigation_settings_text">allows you to adapt the application to your language or other available preferences.</string>
 
     <string name="help_how_to_play_title">How to play</string>
-    <string name="help_how_to_play_step_1">Enter the player name before starting the game.</string>
+    <string name="help_how_to_play_step_1">Enter the player\'s name before starting the game.</string>
     <string name="help_how_to_play_step_2">Check your available coins before placing a bet.</string>
     <string name="help_how_to_play_step_3">Select the type of bet you want to place.</string>
     <string name="help_how_to_play_step_4">Press the button to spin the wheel and wait for the result.</string>
@@ -129,8 +129,8 @@
     <string name="help_bet_red_black_text">you win if the resulting color matches the one you selected.</string>
     <string name="help_bet_even_odd_title">Even / Odd:</string>
     <string name="help_bet_even_odd_text">you win if the resulting number matches the selected parity.</string>
-    <string name="help_bet_exact_title">Exact number:</string>
-    <string name="help_bet_exact_text">offers a higher reward, but it is the hardest option to hit.</string>
+    <string name="help_bet_exact_title">Manque / Passe:</string>
+    <string name="help_bet_exact_text">you win if the resulting number matches the half you selected.</string>
 
     <string name="help_coins_title">Coins and strategy</string>
     <string name="help_coins_text">Coins represent your balance during the game. Every bet directly affects that balance, so it is a good idea to decide carefully how much to risk and when to do it.</string>
