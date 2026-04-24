@@ -1,8 +1,21 @@
 package com.apktados.ruleta.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.media.AudioAttributes
+import android.media.SoundPool
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,66 +27,60 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.view.drawToBitmap
 import androidx.navigation.NavController
 import com.apktados.ruleta.R
+import com.apktados.ruleta.calendar.CalendarHelper
+import com.apktados.ruleta.data.PartidasRepository
 import com.apktados.ruleta.game.ApuestaEvaluator
 import com.apktados.ruleta.game.ResultadoRuleta
 import com.apktados.ruleta.game.RuletaEngine
 import com.apktados.ruleta.game.TipoApuesta
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.runtime.DisposableEffect
+import com.apktados.ruleta.location.locationHelper
+import com.apktados.ruleta.notification.NotificationHelper
+import com.apktados.ruleta.ui.bars.RuletaTopBar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.layout.ContentScale
-import com.apktados.ruleta.data.PartidasRepository
-import com.apktados.ruleta.location.locationHelper
-import com.apktados.ruleta.ui.bars.RuletaTopBar
-import android.Manifest
-import android.content.pm.PackageManager
-import androidx.compose.ui.res.stringResource
-import androidx.core.content.ContextCompat
-import android.graphics.Bitmap
-import android.view.View
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.drawToBitmap
-import android.content.Intent
-import android.net.Uri
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.OutputStream
-import com.apktados.ruleta.notification.NotificationHelper
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 
 @Composable
 public fun GameScreen(
@@ -108,15 +115,38 @@ public fun GameScreen(
 
     var partidaFinalizada by remember { mutableStateOf(false) }
     var retiradaVoluntaria by remember { mutableStateOf(false) }
+    var showCoinsEffect by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val repo = remember { PartidasRepository(context) }
     val scope = rememberCoroutineScope()
+    val calendarHelper = remember { CalendarHelper(context) }
+
+    val soundPool = remember {
+        SoundPool.Builder()
+            .setMaxStreams(2)
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build()
+            )
+            .build()
+    }
+
+    val rouletteSoundId = remember {
+        soundPool.load(context, R.raw.roulette_casino_realistic, 1)
+    }
+
+    val coinsSoundId = remember {
+        soundPool.load(context, R.raw.coins_casino_realistic, 1)
+    }
 
     val disposables = remember { CompositeDisposable() }
     DisposableEffect(Unit) {
         onDispose {
             disposables.clear()
+            soundPool.release()
         }
     }
 
@@ -146,7 +176,6 @@ public fun GameScreen(
 
     val locationHelper = locationHelper(context)
 
-
     Scaffold(
         topBar = {
 
@@ -158,12 +187,13 @@ public fun GameScreen(
                     navController.navigate("history")
                 },
                 onNavigateGame = {},
-                onNavigateHelp = {navController.navigate("help")}
+                onNavigateHelp = { navController.navigate("help") }
             )
         }
     ) { padding ->
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(padding)
         ) {
 
@@ -174,6 +204,10 @@ public fun GameScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
+
+            if (showCoinsEffect) {
+                FallingCoinsOverlay(modifier = Modifier.fillMaxSize())
+            }
 
             if (partidaFinalizada) {
                 Box(
@@ -228,7 +262,10 @@ public fun GameScreen(
                                     ),
                                     border = BorderStroke(2.dp, gold)
                                 ) {
-                                    Text(stringResource(R.string.back_to_menu), fontWeight = FontWeight.Bold)
+                                    Text(
+                                        stringResource(R.string.back_to_menu),
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
 
                                 if (retiradaVoluntaria) {
@@ -278,8 +315,14 @@ public fun GameScreen(
                                     color = Color.White,
                                     fontWeight = FontWeight.Bold
                                 )
-                                Text(stringResource(R.string.coins_label, monedas), color = Color.White)
-                                Text(stringResource(R.string.bet_total_label, apuestaTotal), color = Color.White)
+                                Text(
+                                    stringResource(R.string.coins_label, monedas),
+                                    color = Color.White
+                                )
+                                Text(
+                                    stringResource(R.string.bet_total_label, apuestaTotal),
+                                    color = Color.White
+                                )
 
                                 if (girando) {
                                     Text(
@@ -307,8 +350,6 @@ public fun GameScreen(
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
-
-                        // Spacer(modifier = Modifier.height(16.dp))
 
                         Box(
                             modifier = Modifier
@@ -558,7 +599,6 @@ public fun GameScreen(
                                         )
                                     ) { Text("+") }
                                 }
-                                //
 
                                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -569,9 +609,17 @@ public fun GameScreen(
                                         if (apuestaTotal == 0) return@Button
                                         if (apuestaTotal > monedas) return@Button
 
-
                                         girando = true
                                         scope.launch {
+
+                                            soundPool.play(
+                                                rouletteSoundId,
+                                                1f,
+                                                1f,
+                                                1,
+                                                0,
+                                                1f
+                                            )
 
                                             // Gira entre 3 y 6 vueltas
                                             val vueltas = (3..6).random()
@@ -581,7 +629,7 @@ public fun GameScreen(
                                             // Animación
                                             rotation.animateTo(
                                                 targetValue = target,
-                                                animationSpec = tween(durationMillis = 1500)
+                                                animationSpec = tween(durationMillis = 2200)
                                             )
 
                                             // Pequeña pausa para "efecto"
@@ -620,6 +668,19 @@ public fun GameScreen(
                                                     monedas += monedasMitad * 2
                                                 }
                                             }
+
+                                            soundPool.play(
+                                                coinsSoundId,
+                                                1f,
+                                                1f,
+                                                1,
+                                                0,
+                                                1f
+                                            )
+
+                                            showCoinsEffect = true
+                                            delay(2200)
+                                            showCoinsEffect = false
 
                                             if (monedas <= 0) {
                                                 partidaFinalizada = true
@@ -667,7 +728,10 @@ public fun GameScreen(
                                         if (fineGranted || coarseGranted) {
                                             scope.launch {
                                                 val location = locationHelper.obtenerUbicacionActual()
-                                                val tiempoResolucionMs = System.currentTimeMillis() - inicioPartida
+                                                val tiempoResolucionMs =
+                                                    System.currentTimeMillis() - inicioPartida
+                                                val fechaVictoria = System.currentTimeMillis()
+
                                                 val disposable = repo.guardarPartida(
                                                     jugador = jugador,
                                                     monedasFinales = monedas,
@@ -678,12 +742,66 @@ public fun GameScreen(
                                                     .subscribeOn(Schedulers.io())
                                                     .observeOn(AndroidSchedulers.mainThread())
                                                     .subscribe(
-                                                        { partidaFinalizada = true },
-                                                        { error -> Log.e("DB", context.getString(R.string.db_save_error), error) }
+                                                        {
+                                                            val readCalendarGranted =
+                                                                ContextCompat.checkSelfPermission(
+                                                                    context,
+                                                                    Manifest.permission.READ_CALENDAR
+                                                                ) == PackageManager.PERMISSION_GRANTED
+
+                                                            val writeCalendarGranted =
+                                                                ContextCompat.checkSelfPermission(
+                                                                    context,
+                                                                    Manifest.permission.WRITE_CALENDAR
+                                                                ) == PackageManager.PERMISSION_GRANTED
+
+                                                            if (readCalendarGranted && writeCalendarGranted) {
+                                                                val disposableCalendar =
+                                                                    calendarHelper.guardarVictoria(
+                                                                        jugador = jugador,
+                                                                        monedasFinales = monedas,
+                                                                        fechaMillis = fechaVictoria
+                                                                    )
+                                                                        .subscribeOn(Schedulers.io())
+                                                                        .observeOn(AndroidSchedulers.mainThread())
+                                                                        .subscribe(
+                                                                            {
+                                                                                NotificationHelper.mostrarVictoria(
+                                                                                    context,
+                                                                                    tiempoResolucionMs
+                                                                                )
+                                                                            },
+                                                                            { error ->
+                                                                                Log.e(
+                                                                                    "CAL",
+                                                                                    "Error guardando evento en calendario",
+                                                                                    error
+                                                                                )
+                                                                                NotificationHelper.mostrarVictoria(
+                                                                                    context,
+                                                                                    tiempoResolucionMs
+                                                                                )
+                                                                            }
+                                                                        )
+
+                                                                disposables.add(disposableCalendar)
+                                                            } else {
+                                                                NotificationHelper.mostrarVictoria(
+                                                                    context,
+                                                                    tiempoResolucionMs
+                                                                )
+                                                            }
+                                                        },
+                                                        { error ->
+                                                            Log.e(
+                                                                "DB",
+                                                                context.getString(R.string.db_save_error),
+                                                                error
+                                                            )
+                                                        }
                                                     )
 
                                                 disposables.add(disposable)
-                                                NotificationHelper.mostrarVictoria(context, tiempoResolucionMs)
                                             }
                                         }
                                     },
@@ -695,7 +813,10 @@ public fun GameScreen(
                                         contentColor = Color.White
                                     )
                                 ) {
-                                    Text(text = stringResource(R.string.retire), fontWeight = FontWeight.Bold)
+                                    Text(
+                                        text = stringResource(R.string.retire),
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
                             }
                         }
@@ -737,7 +858,13 @@ public fun GameScreen(
                                     .padding(16.dp)
                             ) {
                                 Text(
-                                    text = stringResource(R.string.result_text, it.numero, color, paridad, mitad),
+                                    text = stringResource(
+                                        R.string.result_text,
+                                        it.numero,
+                                        color,
+                                        paridad,
+                                        mitad
+                                    ),
                                     color = Color.White,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -765,6 +892,58 @@ public fun GameScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+data class CoinItem(
+    val x: Dp,
+    val size: Dp,
+    val rotation: Float,
+    val startY: Float,
+    val endY: Float,
+    val duration: Int
+)
+
+@Composable
+fun FallingCoinsOverlay(modifier: Modifier = Modifier) {
+    val transition = rememberInfiniteTransition(label = "coins")
+
+    val coins = listOf(
+        CoinItem(10.dp, 70.dp, 12f, -100f, 1550f, 3000),
+        CoinItem(40.dp, 72.dp, -10f, -220f, 1500f, 3250),
+        CoinItem(70.dp, 80.dp, 20f, -160f, 1650f, 3500),
+        CoinItem(100.dp, 82.dp, -18f, -260f, 1580f, 3725),
+        CoinItem(130.dp, 89.dp, 8f, -140f, 1700f, 4000),
+        CoinItem(160.dp, 90.dp, -24f, -300f, 1600f, 4250),
+        CoinItem(190.dp, 92.dp, 16f, -180f, 1680f, 4500),
+        CoinItem(220.dp, 99.dp, -14f, -240f, 1540f, 4725),
+        CoinItem(250.dp, 100.dp, 24f, -120f, 1620f, 5000),
+        CoinItem(280.dp, 110.dp, -8f, -280f, 1720f, 5250),
+        CoinItem(310.dp, 120.dp, 14f, -170f, 1660f, 5500),
+        CoinItem(340.dp, 130.dp, -20f, -250f, 1590f, 5275)
+    )
+
+    Box(modifier = modifier) {
+        coins.forEachIndexed { index, coin ->
+            val y by transition.animateFloat(
+                initialValue = coin.startY,
+                targetValue = coin.endY,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(coin.duration),
+                    repeatMode = RepeatMode.Restart
+                ),
+                label = "coinY$index"
+            )
+
+            Image(
+                painter = painterResource(id = R.drawable.coin_casino),
+                contentDescription = "Moneda",
+                modifier = Modifier
+                    .size(coin.size)
+                    .offset(x = coin.x, y = y.dp)
+                    .graphicsLayer(rotationZ = coin.rotation)
+            )
         }
     }
 }
