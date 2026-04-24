@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -96,15 +97,15 @@ fun HomeScreen(
         val writeCalendarGranted = permissions[Manifest.permission.WRITE_CALENDAR] == true
 
         if (fineGranted || coarseGranted) {
-            Log.d("PERM", "Permiso de ubicación concedido")
+            Log.d("PERM", context.getString(R.string.permission_location_granted))
         } else {
-            Log.e("PERM", "Permiso de ubicación denegado")
+            Log.e("PERM", context.getString(R.string.permission_location_denied))
         }
 
         if (notificationGranted) {
-            Log.d("PERM", "Permiso de notificaciones concedido")
+            Log.d("PERM", context.getString(R.string.permission_notifications_granted))
         } else {
-            Log.e("PERM", "Permiso de notificaciones denegado")
+            Log.e("PERM", context.getString(R.string.permission_notifications_denied))
         }
 
         if (readCalendarGranted && writeCalendarGranted) {
@@ -201,7 +202,7 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             RuletaTopBar(
-                titulo = "APKtados",
+                titulo = stringResource(R.string.topbar_title),
                 onBack = { navController.popBackStack() },
                 onNavigateHome = { navController.navigate("home") },
                 onNavigateRanking = { navController.navigate("history") },
@@ -217,7 +218,7 @@ fun HomeScreen(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.home_background),
-                contentDescription = "Fondo casino",
+                contentDescription = stringResource(R.string.background_casino),
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
@@ -244,7 +245,7 @@ fun HomeScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Ruleta",
+                        text = stringResource(R.string.home_title),
                         style = MaterialTheme.typography.headlineLarge,
                         color = gold,
                         fontWeight = FontWeight.ExtraBold
@@ -266,7 +267,10 @@ fun HomeScreen(
                         border = BorderStroke(2.dp, gold)
                     ) {
                         Text(
-                            text = if (musicManager.musicaActiva) "🔊 Música ON" else "🔇 Música OFF",
+                            text = if (musicManager.musicaActiva)
+                                stringResource(R.string.music_on)
+                            else
+                                stringResource(R.string.music_off),
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -285,7 +289,10 @@ fun HomeScreen(
                         ),
                         border = BorderStroke(2.dp, gold)
                     ) {
-                        Text("🎧 Elegir música", fontWeight = FontWeight.Bold)
+                        Text(
+                            text = stringResource(R.string.choose_music),
+                            fontWeight = FontWeight.Bold
+                        )
                     }
 
                     OutlinedTextField(
@@ -293,7 +300,7 @@ fun HomeScreen(
                         onValueChange = { jugador = it },
                         label = {
                             Text(
-                                text = "Nombre del jugador",
+                                text = stringResource(R.string.player_name),
                                 color = gold
                             )
                         },
@@ -325,7 +332,7 @@ fun HomeScreen(
                         border = BorderStroke(2.dp, gold)
                     ) {
                         Text(
-                            text = "Nueva partida",
+                            text = stringResource(R.string.new_game),
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -342,7 +349,7 @@ fun HomeScreen(
                         )
                     ) {
                         Text(
-                            text = "Historial",
+                            text = stringResource(R.string.history),
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -352,14 +359,14 @@ fun HomeScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = "Mejores puntuaciones",
+                            contentDescription = stringResource(R.string.cd_best_scores),
                             tint = gold
                         )
 
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Text(
-                            text = "Mejores puntuaciones",
+                            text = stringResource(R.string.best_scores),
                             color = gold,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
@@ -369,14 +376,14 @@ fun HomeScreen(
                     when {
                         loading -> {
                             Text(
-                                text = "Cargando...",
+                                text = stringResource(R.string.loading),
                                 color = Color.White
                             )
                         }
 
                         top3.isEmpty() -> {
                             Text(
-                                text = "Aún no hay partidas.",
+                                text = stringResource(R.string.no_games_yet),
                                 color = Color.LightGray
                             )
                         }
@@ -403,7 +410,12 @@ fun HomeScreen(
                                             .padding(12.dp)
                                     ) {
                                         Text(
-                                            text = "${index + 1}. ${partida.jugador} - ${partida.monedasFinales} monedas",
+                                            text = stringResource(
+                                                R.string.score_row,
+                                                index + 1,
+                                                partida.jugador,
+                                                partida.monedasFinales
+                                            ),
                                             color = Color.White
                                         )
                                     }

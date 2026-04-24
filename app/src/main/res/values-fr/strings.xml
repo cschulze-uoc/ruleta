@@ -1,0 +1,162 @@
+<resources>
+    <string name="app_name">Roulette</string>
+    <string name="new_game">Nouvelle partie</string>
+    <string name="history">Historique</string>
+    <string name="settings">Paramètres</string>
+    <string name="select_language">Choisir la langue</string>
+    <string name="player_name">Nom du joueur</string>
+    <string name="coins">Jetons</string>
+    <string name="spin">Lancer</string>
+    <string name="back">Retour</string>
+    <string name="menu">Menu</string>
+    <string name="home">Accueil</string>
+    <string name="ranking">Classement</string>
+    <string name="game">Jeu</string>
+    <string name="help">Aide</string>
+    <string name="language_system">Langue du système</string>
+    <string name="language_spanish">Espagnol</string>
+    <string name="language_english">Anglais</string>
+    <string name="language_catalan">Catalan</string>
+    <string name="language_french">Français</string>
+
+    <string name="topbar_title">APKtados</string>
+    <string name="background_casino">Fond casino</string>
+    <string name="home_title">Roulette</string>
+
+    <string name="music_on">Musique ON</string>
+    <string name="music_off">Musique OFF</string>
+    <string name="choose_music">Choisir une musique</string>
+
+    <string name="best_scores">Meilleurs scores</string>
+    <string name="loading">Chargement…</string>
+    <string name="no_games_yet">Aucune partie pour le moment.</string>
+    <string name="score_row">%1$d. %2$s - %3$d jetons</string>
+
+    <string name="permission_location_granted">Autorisation de localisation accordée</string>
+    <string name="permission_location_denied">Autorisation de localisation refusée</string>
+    <string name="permission_notifications_granted">Autorisation des notifications accordée</string>
+    <string name="permission_notifications_denied">Autorisation des notifications refusée</string>
+
+    <string name="cd_best_scores">Meilleurs scores</string>
+
+    <string name="roulette_title">Roulette</string>
+    <string name="game_finished">PARTIE TERMINÉE</string>
+    <string name="final_coins">Jetons finaux : %1$d</string>
+    <string name="back_to_menu">Retour au menu</string>
+
+    <string name="player_label">Joueur : %1$s</string>
+    <string name="coins_label">Jetons : %1$d</string>
+    <string name="bet_total_label">Mise totale : %1$d</string>
+    <string name="spinning">En rotation…</string>
+
+    <string name="roulette_image">Roulette</string>
+    <string name="bets_title">PARIS</string>
+    <string name="bet_color">Couleur</string>
+    <string name="red">Rouge</string>
+    <string name="black">Noir</string>
+    <string name="bet_parity">Parité</string>
+    <string name="even">Pair</string>
+    <string name="odd">Impair</string>
+    <string name="bet_half">Moitié</string>
+    <string name="manque">Manque</string>
+    <string name="passe">Passe</string>
+
+    <string name="spin_roulette">Lancer la roulette</string>
+    <string name="retire">Se retirer</string>
+
+    <string name="result_text">Résultat : %1$d (%2$s, %3$s, %4$s)</string>
+    <string name="green">vert</string>
+    <string name="red_lower">rouge</string>
+    <string name="black_lower">noir</string>
+    <string name="even_lower">pair</string>
+    <string name="odd_lower">impair</string>
+    <string name="passe_lower">passe</string>
+    <string name="manque_lower">manque</string>
+
+    <string name="no_coins_cd">Plus de jetons</string>
+    <string name="no_coins_message">Vous n\'avez plus de jetons</string>
+
+    <string name="db_save_error">Erreur lors de l\'enregistrement</string>
+
+    <string name="history_read_error">Erreur lors de la lecture de l\'historique</string>
+    <string name="history_title_upper">HISTORIQUE</string>
+    <string name="loading_history">Chargement de l\'historique…</string>
+    <string name="error_prefix">Erreur : %1$s</string>
+    <string name="no_saved_games">Aucune partie enregistrée.</string>
+    <string name="saved_games_count">Parties enregistrées : %1$d</string>
+
+    <string name="player_row">Joueur : %1$s</string>
+    <string name="final_coins_row">Jetons finaux : %1$d</string>
+    <string name="date_row">Date : %1$s</string>
+    <string name="location_row">Position : %1$s, %2$s</string>
+    <string name="time_seconds_row">Temps : %1$s</string>
+    <string name="casino_background">Fond casino</string>
+
+    <string name="accept">Accepter</string>
+    <string name="resolution_time">Temps de résolution</string>
+    <string name="game_duration">La partie a duré %1$s</string>
+
+    <string name="help_no_coins_title">Que se passe-t-il quand vous n\'avez plus de pièces</string>
+    <string name="help_no_coins_text">Si vous n\'avez plus de pièces, la partie se termine et vous ne pouvez plus continuer à miser. À ce moment-là, le résultat final s\'affiche et vous pouvez revenir au menu pour commencer une nouvelle partie ou consulter l\'historique.</string>
+
+    <string name="help_save_games_title">Comment les parties sont enregistrées</string>
+    <string name="help_save_games_text">À la fin d\'une partie, ses données sont enregistrées dans la base de données locale de l\'appareil. Ainsi, l\'application peut ensuite afficher l\'historique des parties et conserver les informations entre différentes utilisations de l\'application.</string>
+
+    <string name="help_location_title">Localisation dans l\'historique</string>
+    <string name="help_location_text">Si l\'utilisateur accorde l\'autorisation de localisation, l\'application peut enregistrer la position approximative de la partie avec le reste des données. Cette information peut ensuite être consultée dans l\'historique.</string>
+
+    <string name="help_notification_title">Notification de victoire</string>
+    <string name="help_notification_text">Si vous gagnez une partie, l\'application affichera une notification Android. Depuis cette notification, il est possible de consulter la durée de la partie.</string>
+
+    <string name="help_lang_code">fr</string>
+    <string name="help_page_title">Aide - Roulette</string>
+    <string name="help_title">Aide du jeu</string>
+    <string name="help_image_alt">Image de la roulette</string>
+
+    <string name="help_intro">Dans cette section, vous pouvez consulter rapidement le fonctionnement de l\'application, les types de paris disponibles et la meilleure façon d\'utiliser vos pièces pendant la partie.</string>
+
+    <string name="help_objective_title">Objectif</string>
+    <string name="help_objective_text">L\'objectif du jeu est de miser vos pièces à chaque tour et d\'essayer de terminer avec la plus grande quantité possible. Plus vos décisions sont bonnes, meilleur pourra être votre score final.</string>
+
+    <string name="help_navigation_title">Écrans de l\'application</string>
+    <string name="help_navigation_home_label">Écran principal :</string>
+    <string name="help_navigation_home_text">depuis cet écran, vous pouvez commencer une nouvelle partie, consulter l\'historique et accéder aux autres options de l\'application.</string>
+    <string name="help_navigation_game_label">Écran de jeu :</string>
+    <string name="help_navigation_game_text">c\'est ici que vous placez vos paris, lancez la roulette et voyez le résultat de chaque tour.</string>
+    <string name="help_navigation_history_label">Historique :</string>
+    <string name="help_navigation_history_text">affiche les parties enregistrées précédemment afin que vous puissiez consulter les résultats et comparer les scores.</string>
+    <string name="help_navigation_settings_label">Paramètres et langue :</string>
+    <string name="help_navigation_settings_text">permet d\'adapter l\'application à votre langue ou à d\'autres préférences disponibles.</string>
+
+    <string name="help_how_to_play_title">Comment jouer</string>
+    <string name="help_how_to_play_step_1">Saisissez le nom du joueur avant de commencer la partie.</string>
+    <string name="help_how_to_play_step_2">Vérifiez le nombre de pièces disponibles avant de placer un pari.</string>
+    <string name="help_how_to_play_step_3">Sélectionnez le type de pari que vous souhaitez effectuer.</string>
+    <string name="help_how_to_play_step_4">Appuyez sur le bouton pour faire tourner la roulette et attendez le résultat.</string>
+    <string name="help_how_to_play_step_5">Selon le résultat, vous gagnerez ou perdrez des pièces et pourrez continuer à jouer jusqu\'à la fin de la partie.</string>
+
+    <string name="help_bets_title">Types de pari</string>
+    <string name="help_bet_red_black_title">Rouge / Noir :</string>
+    <string name="help_bet_red_black_text">vous gagnez si la couleur obtenue correspond à celle que vous avez choisie.</string>
+    <string name="help_bet_even_odd_title">Pair / Impair :</string>
+    <string name="help_bet_even_odd_text">vous gagnez si le numéro obtenu correspond à la parité sélectionnée.</string>
+    <string name="help_bet_exact_title">Manque / Passe :</string>
+    <string name="help_bet_exact_text">vous gagnez si le numéro obtenu correspond à la moitié sélectionnée.</string>
+
+    <string name="help_coins_title">Pièces et stratégie</string>
+    <string name="help_coins_text">Les pièces représentent votre solde pendant la partie. Chaque pari affecte directement ce solde, il est donc conseillé de bien réfléchir à la somme à risquer et au moment de le faire.</string>
+    <string name="help_tip_label">Conseil :</string>
+    <string name="help_coins_tip">si vous pariez de manière impulsive, vous risquez de manquer rapidement de pièces. Jouer avec équilibre donne généralement de meilleurs résultats à long terme.</string>
+
+    <string name="help_history_title">Historique des parties</string>
+    <string name="help_history_text">L\'historique vous permet de consulter les parties précédemment enregistrées sur l\'appareil. Il est utile pour suivre votre progression et comparer vos meilleurs scores.</string>
+
+    <string name="help_recommendations_title">Recommandations d\'utilisation</string>
+    <string name="help_recommendations_1">Lisez attentivement les textes de chaque écran avant de jouer pour la première fois.</string>
+    <string name="help_recommendations_2">Vérifiez vos pièces avant chaque tour afin d\'éviter des paris trop risqués sans marge.</string>
+    <string name="help_recommendations_3">Consultez l\'historique à la fin de chaque partie pour comparer vos résultats.</string>
+
+    <string name="help_footer">Roulette - écran d\'aide</string>
+
+
+</resources>
