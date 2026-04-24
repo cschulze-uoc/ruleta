@@ -92,6 +92,8 @@ fun HomeScreen(
         val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
         val coarseGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         val notificationGranted = permissions[Manifest.permission.POST_NOTIFICATIONS] == true
+        val readCalendarGranted = permissions[Manifest.permission.READ_CALENDAR] == true
+        val writeCalendarGranted = permissions[Manifest.permission.WRITE_CALENDAR] == true
 
         if (fineGranted || coarseGranted) {
             Log.d("PERM", "Permiso de ubicación concedido")
@@ -103,6 +105,12 @@ fun HomeScreen(
             Log.d("PERM", "Permiso de notificaciones concedido")
         } else {
             Log.e("PERM", "Permiso de notificaciones denegado")
+        }
+
+        if (readCalendarGranted && writeCalendarGranted) {
+            Log.d("PERM", "Permisos de calendario concedidos")
+        } else {
+            Log.e("PERM", "Permisos de calendario denegados")
         }
     }
 
@@ -136,6 +144,24 @@ fun HomeScreen(
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             permisosPendientes.add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
+        if (
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_CALENDAR
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permisosPendientes.add(Manifest.permission.READ_CALENDAR)
+        }
+
+        if (
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.WRITE_CALENDAR
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permisosPendientes.add(Manifest.permission.WRITE_CALENDAR)
         }
 
         if (permisosPendientes.isNotEmpty()) {
@@ -180,7 +206,7 @@ fun HomeScreen(
                 onNavigateHome = { navController.navigate("home") },
                 onNavigateRanking = { navController.navigate("history") },
                 onNavigateGame = { onNuevaPartida(jugador) },
-                onNavigateHelp = {navController.navigate("help")}
+                onNavigateHelp = { navController.navigate("help") }
             )
         }
     ) { padding ->
