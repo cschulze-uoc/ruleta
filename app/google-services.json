@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "281291791263",
+    "project_id": "ruleta-6f47b",
+    "storage_bucket": "ruleta-6f47b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281291791263:android:68e1581e5f97f9a3d2fbaa",
+        "android_client_info": {
+          "package_name": "com.apktados.ruleta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "281291791263-dv40qk261c3kku3sd3uj3ruhjcujd888.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.apktados.ruleta",
+            "certificate_hash": "fbc66eaa5741dadeb1e6b67d6955f45b6349c8ce"
+          }
+        },
+        {
+          "client_id": "281291791263-59rec7hg6bv9kc3bs5te1ltqqjseuccd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDF4g8NJZOgBB-Zos0gX7UgObyYadyAVkE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "281291791263-59rec7hg6bv9kc3bs5te1ltqqjseuccd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+//import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -60,6 +60,11 @@ import com.apktados.ruleta.ui.bars.RuletaTopBar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import com.google.firebase.auth.FirebaseAuth
+import com.google.android.gms.auth.api.signin.*
+import com.google.android.gms.common.api.ApiException
+import androidx.activity.result.contract.ActivityResultContracts
+import com.google.firebase.auth.GoogleAuthProvider
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -68,10 +73,19 @@ fun HomeScreen(
     onHistorial: () -> Unit,
     navController: NavController
 ) {
-    var jugador by remember { mutableStateOf("Carlos") }
-
     val context = LocalContext.current
     val repo = remember { PartidasRepository(context) }
+
+    val auth = remember { FirebaseAuth.getInstance() }
+    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken(context.getString(R.string.default_web_client_id))
+        .requestEmail()
+        .build()
+    val googleClient = GoogleSignIn.getClient(context, gso)
+
+    var user by remember {
+        mutableStateOf(auth.currentUser)
+    }
 
     val app = context.applicationContext as com.apktados.ruleta.RuletaApp
     val musicManager = app.musicManager
@@ -112,6 +126,39 @@ fun HomeScreen(
             Log.d("PERM", "Permisos de calendario concedidos")
         } else {
             Log.e("PERM", "Permisos de calendario denegados")
+        }
+    }
+
+    val authLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+
+        try {
+            val account = task.getResult(ApiException::class.java)
+
+            val credential = GoogleAuthProvider.getCredential(
+                account.idToken,
+                null
+            )
+
+            auth.signInWithCredential(credential)
+                .addOnCompleteListener { task ->
+
+                    if (task.isSuccessful) {
+                        user = auth.currentUser
+                        Log.d(
+                            "LOGIN",
+                            auth.currentUser?.displayName ?: "NULL"
+                        )
+                    } else {
+                        Log.e("LOGIN", "Error login")
+                    }
+                }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -206,7 +253,7 @@ fun HomeScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateHome = { navController.navigate("home") },
                 onNavigateRanking = { navController.navigate("history") },
-                onNavigateGame = { onNuevaPartida(jugador) },
+                onNavigateGame = { onNuevaPartida(auth.currentUser?.displayName ?: "Jugador") },
                 onNavigateHelp = { navController.navigate("help") }
             )
         }
@@ -250,6 +297,46 @@ fun HomeScreen(
                         color = gold,
                         fontWeight = FontWeight.ExtraBold
                     )
+
+                    Button(
+                        onClick = {
+                            val signInIntent = googleClient.signInIntent
+                            authLauncher.launch(signInIntent)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF4285F4),
+                            contentColor = Color.White
+                        ),
+                        border = BorderStroke(2.dp, gold)
+                    ) {
+                        Text("Iniciar sesión con Google")
+                    }
+
+                    Button(
+                        onClick = {
+
+                            auth.signOut()
+
+                            googleClient.signOut().addOnCompleteListener {
+                                user = null
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.DarkGray,
+                            contentColor = Color.White
+                        ),
+                        border = BorderStroke(2.dp, gold)
+                    ) {
+                        Text("Cerrar sesión")
+                    }
 
                     Button(
                         onClick = { musicManager.toggleMusic() },
@@ -296,8 +383,9 @@ fun HomeScreen(
                     }
 
                     OutlinedTextField(
-                        value = jugador,
-                        onValueChange = { jugador = it },
+                        value = user?.displayName ?: "",
+                        onValueChange = {},
+                        enabled = false,
                         label = {
                             Text(
                                 text = stringResource(R.string.player_name),
@@ -315,12 +403,15 @@ fun HomeScreen(
                             unfocusedLabelColor = gold.copy(alpha = 0.8f),
                             cursorColor = gold,
                             focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledTextColor = Color.White,
+                            disabledBorderColor = gold.copy(alpha = 0.7f),
+                            disabledLabelColor = gold.copy(alpha = 0.8f)
                         )
                     )
 
                     Button(
-                        onClick = { onNuevaPartida(jugador) },
+                        onClick = { onNuevaPartida(user?.displayName ?: "Jugador") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
