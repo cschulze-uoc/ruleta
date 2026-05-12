@@ -47,23 +47,38 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.apktados.ruleta.data.FirestoreManager
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun HistoryScreen(navController: NavController) {
-    val context = LocalContext.current
+    /*val context = LocalContext.current
     val repo = remember { PartidasRepository(context) }
 
     var items by remember { mutableStateOf<List<Partida>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
 
-    val disposables = remember { CompositeDisposable() }
+    val disposables = remember { CompositeDisposable() }*/
+    val firestore = remember { FirestoreManager() }
+
+    var items by remember {
+        mutableStateOf<List<Partida>>(emptyList())
+    }
+
+    var loading by remember {
+        mutableStateOf(true)
+    }
+
+    var error by remember {
+        mutableStateOf<String?>(null)
+    }
 
     val gold = Color(0xFFFFD700)
     val darkOverlay = Color(0xCC111111)
     val buttonRed = Color(0xFFC00000)
 
-    DisposableEffect(Unit) {
+    /*DisposableEffect(Unit) {
         loading = true
         error = null
 
@@ -85,6 +100,17 @@ fun HistoryScreen(navController: NavController) {
 
         onDispose {
             disposables.clear()
+        }
+    }*/
+    LaunchedEffect(Unit) {
+
+        loading = true
+
+        firestore.obtenerTop10 { lista ->
+
+            items = lista
+
+            loading = false
         }
     }
 

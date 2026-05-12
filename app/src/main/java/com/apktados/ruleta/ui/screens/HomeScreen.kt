@@ -65,6 +65,7 @@ import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.ApiException
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.firebase.auth.GoogleAuthProvider
+import com.apktados.ruleta.data.FirestoreManager
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -75,6 +76,7 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val repo = remember { PartidasRepository(context) }
+    val firestore = remember { FirestoreManager() }
 
     val auth = remember { FirebaseAuth.getInstance() }
     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -98,7 +100,7 @@ fun HomeScreen(
         }
     }
 
-    var top3 by remember { mutableStateOf<List<Partida>>(emptyList()) }
+    var top10 by remember { mutableStateOf<List<Partida>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -217,7 +219,7 @@ fun HomeScreen(
         }
     }
 
-    val disposables = remember { CompositeDisposable() }
+    /*val disposables = remember { CompositeDisposable() }
 
     DisposableEffect(Unit) {
         loading = true
@@ -240,6 +242,17 @@ fun HomeScreen(
 
         onDispose {
             disposables.clear()
+        }
+    }*/
+    LaunchedEffect(Unit) {
+
+        loading = true
+
+        firestore.obtenerTop10 { lista ->
+
+            top10 = lista
+
+            loading = false
         }
     }
 
@@ -472,7 +485,7 @@ fun HomeScreen(
                             )
                         }
 
-                        top3.isEmpty() -> {
+                        top10.isEmpty() -> {
                             Text(
                                 text = stringResource(R.string.no_games_yet),
                                 color = Color.LightGray
@@ -485,7 +498,7 @@ fun HomeScreen(
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                top3.forEachIndexed { index, partida ->
+                                top10.forEachIndexed { index, partida ->
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
