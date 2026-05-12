@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "244170020587",
+    "project_id": "ruletauoc",
+    "storage_bucket": "ruletauoc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244170020587:android:6944fe39565c7e3acf50ae",
+        "android_client_info": {
+          "package_name": "com.apktados.ruleta"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2U6O-8kyglpzqYtCer-0WlV1RBNe8r90"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

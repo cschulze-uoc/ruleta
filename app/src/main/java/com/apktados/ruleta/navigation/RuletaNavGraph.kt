@@ -19,7 +19,10 @@ fun RuletaNavGraph() {
                 onHistorial = {
                     navController.navigate("history")
                 },
-                navController
+                onRankingOnline = {
+                    navController.navigate("onlineRanking")
+                },
+                navController = navController
             )
         }
 

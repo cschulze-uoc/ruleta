@@ -18,7 +18,10 @@ class CalendarHelper(private val context: Context) {
 
             val projection = arrayOf(
                 CalendarContract.Calendars._ID,
-                CalendarContract.Calendars.CALENDAR_DISPLAY_NAME
+                CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
+                CalendarContract.Calendars.ACCOUNT_NAME,
+                CalendarContract.Calendars.ACCOUNT_TYPE,
+                CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL
             )
 
             val cursor = resolver.query(
@@ -32,16 +35,26 @@ class CalendarHelper(private val context: Context) {
             var calendarId: Long? = null
 
             cursor?.use {
-                if (it.moveToFirst()) {
-                    val idIndex = it.getColumnIndex(CalendarContract.Calendars._ID)
-                    if (idIndex != -1) {
+                val idIndex = it.getColumnIndex(CalendarContract.Calendars._ID)
+                val accountTypeIndex = it.getColumnIndex(CalendarContract.Calendars.ACCOUNT_TYPE)
+                val accessLevelIndex = it.getColumnIndex(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)
+
+                while (it.moveToNext()) {
+                    val accountType = it.getString(accountTypeIndex)
+                    val accessLevel = it.getInt(accessLevelIndex)
+
+                    if (
+                        accountType == "com.google" &&
+                        accessLevel >= CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR
+                    ) {
                         calendarId = it.getLong(idIndex)
+                        break
                     }
                 }
             }
 
             if (calendarId == null) {
-                throw IllegalStateException("No se encontró ningún calendario disponible")
+                throw IllegalStateException("No se encontró ningún calendario de Google disponible")
             }
 
             val inicio = fechaMillis

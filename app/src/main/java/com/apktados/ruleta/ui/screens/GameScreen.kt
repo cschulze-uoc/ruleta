@@ -19,6 +19,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import com.apktados.ruleta.firebase.FirebaseRepository
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -731,6 +732,17 @@ public fun GameScreen(
                                                 val tiempoResolucionMs =
                                                     System.currentTimeMillis() - inicioPartida
                                                 val fechaVictoria = System.currentTimeMillis()
+
+                                                FirebaseRepository.guardarPuntuacion(
+                                                    nombre = jugador,
+                                                    monedas = monedas,
+                                                    onOk = {
+                                                        Log.d("FIREBASE", "Puntuación subida correctamente")
+                                                    },
+                                                    onError = { error ->
+                                                        Log.e("FIREBASE", "Error subiendo puntuación: $error")
+                                                    }
+                                                )
 
                                                 val disposable = repo.guardarPartida(
                                                     jugador = jugador,

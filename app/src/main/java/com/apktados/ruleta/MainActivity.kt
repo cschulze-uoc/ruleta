@@ -16,11 +16,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.apktados.ruleta.firebase.FirebaseRepository
+import com.apktados.ruleta.firebase.FirebaseTest
 import com.apktados.ruleta.notification.NotificationHelper
 import com.apktados.ruleta.ui.screens.GameScreen
 import com.apktados.ruleta.ui.screens.HelpScreen
 import com.apktados.ruleta.ui.screens.HistoryScreen
 import com.apktados.ruleta.ui.screens.HomeScreen
+import com.apktados.ruleta.ui.screens.OnlineRankingScreen
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,7 +34,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         procesarIntent(intent)
 
         setContent {
@@ -100,8 +103,15 @@ fun RuletaMainApp(
     ) {
         composable("home") {
             HomeScreen(
-                onNuevaPartida = { jugador -> navController.navigate("game/$jugador") },
-                onHistorial = { navController.navigate("history") },
+                onNuevaPartida = { jugador ->
+                    navController.navigate("game/$jugador")
+                },
+                onHistorial = {
+                    navController.navigate("history")
+                },
+                onRankingOnline = {
+                    navController.navigate("onlineRanking")
+                },
                 navController = navController
             )
         }
@@ -120,6 +130,12 @@ fun RuletaMainApp(
 
         composable("help") {
             HelpScreen(navController = navController)
+        }
+
+        composable("onlineRanking") {
+            OnlineRankingScreen(
+                onVolver = { navController.popBackStack() }
+            )
         }
     }
 }

@@ -66,6 +66,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 fun HomeScreen(
     onNuevaPartida: (String) -> Unit,
     onHistorial: () -> Unit,
+    onRankingOnline: () -> Unit,
     navController: NavController
 ) {
     var jugador by remember { mutableStateOf("Carlos") }
@@ -354,6 +355,13 @@ fun HomeScreen(
                         )
                     }
 
+                    Button(
+                        onClick = onRankingOnline,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Top 10 Online")
+                    }
+
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -436,6 +444,7 @@ fun HomeScreenPreview() {
         HomeScreen(
             onNuevaPartida = {},
             onHistorial = {},
+            onRankingOnline = {},
             navController = {} as NavController
         )
     }
