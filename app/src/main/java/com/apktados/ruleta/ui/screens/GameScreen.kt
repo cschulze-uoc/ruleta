@@ -81,6 +81,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.OutputStream
+import com.apktados.ruleta.data.FirestoreManager
 
 @Composable
 public fun GameScreen(
@@ -119,6 +120,7 @@ public fun GameScreen(
 
     val context = LocalContext.current
     val repo = remember { PartidasRepository(context) }
+    val firestore = remember { FirestoreManager() }
     val scope = rememberCoroutineScope()
     val calendarHelper = remember { CalendarHelper(context) }
 
@@ -743,6 +745,12 @@ public fun GameScreen(
                                                     .observeOn(AndroidSchedulers.mainThread())
                                                     .subscribe(
                                                         {
+
+                                                            firestore.guardarPartida(
+                                                                jugador = jugador,
+                                                                puntuacion = monedas
+                                                            )
+
                                                             val readCalendarGranted =
                                                                 ContextCompat.checkSelfPermission(
                                                                     context,
