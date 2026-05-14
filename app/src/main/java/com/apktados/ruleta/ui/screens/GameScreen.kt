@@ -193,7 +193,7 @@ public fun GameScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateHome = { navController.navigate("home") },
                 onNavigateRanking = {
-                    navController.navigate("history")
+                    navController.navigate("ranking")
                 },
                 onNavigateGame = {},
                 onNavigateHelp = {navController.navigate("help")}

@@ -39,7 +39,7 @@ fun HelpScreen(
                 titulo = stringResource(R.string.help),
                 onBack = { navController.popBackStack() },
                 onNavigateHome = { navController.navigate("home") },
-                onNavigateRanking = { navController.navigate("history") },
+                onNavigateRanking = { navController.navigate("ranking") },
                 onNavigateGame = { navController.navigate("home") },
                 onNavigateHelp = {}
             )

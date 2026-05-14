@@ -36,6 +36,15 @@
     <string name="no_games_yet">There are no games yet.</string>
     <string name="score_row">%1$d. %2$s - %3$d coins</string>
 
+    <string name="online_ranking_title">Online ranking</string>
+    <string name="refresh_ranking">Refresh ranking</string>
+    <string name="loading_online_ranking">Loading online ranking…</string>
+    <string name="no_online_scores">There are no online scores yet.</string>
+    <string name="online_ranking_error">Error loading online ranking</string>
+    <string name="online_ranking_player_row">%1$d. %2$s</string>
+    <string name="online_ranking_best_score">Best score: %1$d</string>
+    <string name="online_ranking_victories">Victories: %1$d</string>
+
     <string name="permission_location_granted">Location permission granted</string>
     <string name="permission_location_denied">Location permission denied</string>
     <string name="permission_notifications_granted">Notification permission granted</string>

@@ -21,6 +21,7 @@ import com.apktados.ruleta.ui.screens.GameScreen
 import com.apktados.ruleta.ui.screens.HelpScreen
 import com.apktados.ruleta.ui.screens.HistoryScreen
 import com.apktados.ruleta.ui.screens.HomeScreen
+import com.apktados.ruleta.ui.screens.RankingScreen
 
 class MainActivity : AppCompatActivity() {
 
@@ -116,6 +117,10 @@ fun RuletaMainApp(
 
         composable("history") {
             HistoryScreen(navController = navController)
+        }
+
+        composable("ranking") {
+            RankingScreen(navController = navController)
         }
 
         composable("help") {

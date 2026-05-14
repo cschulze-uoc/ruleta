@@ -37,6 +37,15 @@
     <string name="no_games_yet">Encara no hi ha partides.</string>
     <string name="score_row">%1$d. %2$s - %3$d monedes</string>
 
+    <string name="online_ranking_title">Ranking online</string>
+    <string name="refresh_ranking">Refrescar ranking</string>
+    <string name="loading_online_ranking">Carregant ranking online…</string>
+    <string name="no_online_scores">Encara no hi ha puntuacions online.</string>
+    <string name="online_ranking_error">Error carregant ranking online</string>
+    <string name="online_ranking_player_row">%1$d. %2$s</string>
+    <string name="online_ranking_best_score">Millor puntuacio: %1$d</string>
+    <string name="online_ranking_victories">Victories: %1$d</string>
+
     <string name="permission_location_granted">Permís d\'ubicació concedit</string>
     <string name="permission_location_denied">Permís d\'ubicació denegat</string>
     <string name="permission_notifications_granted">Permís de notificacions concedit</string>

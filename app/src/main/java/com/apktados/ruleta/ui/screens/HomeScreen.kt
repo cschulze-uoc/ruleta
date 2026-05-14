@@ -206,7 +206,7 @@ fun HomeScreen(
                 titulo = stringResource(R.string.topbar_title),
                 onBack = { navController.popBackStack() },
                 onNavigateHome = { navController.navigate("home") },
-                onNavigateRanking = { navController.navigate("history") },
+                onNavigateRanking = { navController.navigate("ranking") },
                 onNavigateGame = { onNuevaPartida(jugador) },
                 onNavigateHelp = { navController.navigate("help") }
             )
