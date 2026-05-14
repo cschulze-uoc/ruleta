@@ -27,6 +27,11 @@
     <string name="music_off">Música OFF</string>
     <string name="choose_music">Escollir música</string>
 
+    <string name="sign_in_with_google">Iniciar sessio amb Google</string>
+    <string name="signed_in_as">Sessio iniciada com %1$s</string>
+    <string name="sign_out">Tancar sessio</string>
+    <string name="google_sign_in_error">Error en iniciar sessio amb Google</string>
+
     <string name="best_scores">Millors puntuacions</string>
     <string name="loading">Carregant…</string>
     <string name="no_games_yet">Encara no hi ha partides.</string>
@@ -41,7 +46,11 @@
 
     <string name="roulette_title">Ruleta</string>
     <string name="game_finished">PARTIDA FINALITZADA</string>
+    <string name="game_victory_title">VICTORIA</string>
+    <string name="game_defeat_title">DERROTA</string>
+    <string name="game_defeat_no_coins">T\'has quedat sense monedes.</string>
     <string name="final_coins">Monedes finals: %1$d</string>
+    <string name="resolution_time_seconds">Temps de resolucio: %1$d segons</string>
     <string name="back_to_menu">Tornar al menú</string>
 
     <string name="player_label">Jugador: %1$s</string>
