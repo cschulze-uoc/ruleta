@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "768907258193-ru93l7affa4v64rb6baaddqvd5733ivu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.apktados.ruleta",
+            "certificate_hash": "cbbfebba4369ed122fdae0071ca1af650c671d98"
+          }
+        },
+        {
           "client_id": "768907258193-uchuqqice64qkcmch6dp1t2m534ns8kq.apps.googleusercontent.com",
           "client_type": 3
         }

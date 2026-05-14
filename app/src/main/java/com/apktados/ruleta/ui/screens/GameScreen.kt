@@ -63,6 +63,7 @@ import android.content.pm.PackageManager
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import com.apktados.ruleta.notification.NotificationHelper
+import com.apktados.ruleta.data.remote.FirebaseGameRepository
 
 @Composable
 public fun GameScreen(
@@ -98,6 +99,7 @@ public fun GameScreen(
 
     val context = LocalContext.current
     val repo = remember { PartidasRepository(context) }
+    val firebaseGameRepository = remember { FirebaseGameRepository() }
     val scope = rememberCoroutineScope()
 
     //val musicManager = remember { com.apktados.ruleta.audio.MusicManager(context) }
@@ -167,7 +169,10 @@ public fun GameScreen(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     {
-                        // TODO guardar victoria en Firebase.
+                        firebaseGameRepository.registerVictory(monedas)
+                            .addOnFailureListener { error ->
+                                Log.e("Firebase", "Error saving victory in Firebase", error)
+                            }
                         // TODO cobrar premio comun.
                         partidaFinalizada = true
                     },
