@@ -48,7 +48,7 @@ fun RuletaTopBar(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    painter = painterResource(id = R.drawable.fichas),
+                    painter = painterResource(id = R.drawable.coin_casino),
                     contentDescription = null,
                     modifier = Modifier
                         .size(48.dp)

@@ -157,8 +157,8 @@
     <string name="help_bet_red_black_text">vous gagnez si la couleur obtenue correspond à celle que vous avez choisie.</string>
     <string name="help_bet_even_odd_title">Pair / Impair :</string>
     <string name="help_bet_even_odd_text">vous gagnez si le numéro obtenu correspond à la parité sélectionnée.</string>
-    <string name="help_bet_exact_title">Numéro exact :</string>
-    <string name="help_bet_exact_text">offre une récompense plus élevée, mais c\'est l\'option la plus difficile à réussir.</string>
+    <string name="help_bet_exact_title">Manque / Passe :</string>
+    <string name="help_bet_exact_text">vous gagnez si le numéro obtenu correspond à la moitié sélectionnée.</string>
 
     <string name="help_coins_title">Pièces et stratégie</string>
     <string name="help_coins_text">Les pièces représentent votre solde pendant la partie. Chaque pari affecte directement ce solde, il est donc conseillé de bien réfléchir à la somme à risquer et au moment de le faire.</string>
