@@ -186,6 +186,7 @@ public fun GameScreen(
     val inicioPartida = remember { System.currentTimeMillis() }
 
     val locationHelper = locationHelper(context)
+    // Evita entrar en una partida y retirarse directamente para cobrar el bote.
     val canRetireAsVictory = monedas >= MIN_COINS_TO_RETIRE
 
     fun loadGlobalPrize() {
@@ -226,6 +227,7 @@ public fun GameScreen(
     fun finishGameAsDefeat(monedasFinales: Int) {
         resultadoPartida = ResultadoPartida.Derrota(monedasFinales)
         premioComunActual += GLOBAL_PRIZE_LOSS_INCREMENT
+        // La derrota no se guarda localmente, pero si aporta monedas al bote comun.
         firebaseGameRepository.increaseGlobalPrize(GLOBAL_PRIZE_LOSS_INCREMENT)
             .addOnSuccessListener {
                 Log.d(
@@ -279,6 +281,7 @@ public fun GameScreen(
                         firebaseGameRepository.claimGlobalPrize()
                             .addOnSuccessListener { claimedPrize ->
                                 Log.d("Firebase", "Premio comun cobrado: $claimedPrize")
+                                // Para el ranking online cuenta la puntuacion con el bote incluido.
                                 registerOnlineVictoryWithPrize(claimedPrize)
                             }
                             .addOnFailureListener { error ->

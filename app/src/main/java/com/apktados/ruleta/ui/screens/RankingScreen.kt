@@ -75,7 +75,7 @@ fun RankingScreen(navController: NavController) {
         Log.d("FirebaseREST", "Loading global prize via REST")
 
         try {
-            // Producto 3: lectura REST de Firebase con Retrofit + Moshi.
+            // Esta lectura es por REST; el resto del juego sigue usando el SDK de Firebase.
             val prize = repository.getGlobalPrizeViaRest()
             globalPrize = prize
             Log.d("FirebaseREST", "Global prize REST loaded amount=${prize.amount}")

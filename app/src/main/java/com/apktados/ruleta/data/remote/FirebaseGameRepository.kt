@@ -29,6 +29,7 @@ class FirebaseGameRepository(
         val now = System.currentTimeMillis()
         val result = TaskCompletionSource<Void>()
 
+        // Uso transaccion para no perder victorias si dos escrituras llegan casi a la vez.
         playerRef.runTransaction(object : Transaction.Handler {
             override fun doTransaction(currentData: MutableData): Transaction.Result {
                 val current = currentData.getValue(PlayerRemote::class.java)
@@ -90,7 +91,6 @@ class FirebaseGameRepository(
         }
     }
 
-    // REST read with Retrofit + Moshi required by Producto 3.
     suspend fun getGlobalPrizeViaRest(): GlobalPrizeRemote {
         return FirebaseRestClient.api.getGlobalPrize()?.toRemote() ?: GlobalPrizeRemote()
     }
@@ -99,6 +99,7 @@ class FirebaseGameRepository(
         val result = TaskCompletionSource<Void>()
         val now = System.currentTimeMillis()
 
+        // El bote es compartido, por eso se incrementa dentro de una transaccion.
         globalPrizeRef.runTransaction(object : Transaction.Handler {
             override fun doTransaction(currentData: MutableData): Transaction.Result {
                 val current = currentData.getValue(GlobalPrizeRemote::class.java)
@@ -135,6 +136,7 @@ class FirebaseGameRepository(
         val now = System.currentTimeMillis()
         var claimedAmount = 0
 
+        // Se lee y se pone a cero en la misma transaccion para que no lo cobren dos jugadores.
         globalPrizeRef.runTransaction(object : Transaction.Handler {
             override fun doTransaction(currentData: MutableData): Transaction.Result {
                 val current = currentData.getValue(GlobalPrizeRemote::class.java)
