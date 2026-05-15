@@ -45,6 +45,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -84,6 +85,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.OutputStream
 
+private const val MIN_COINS_TO_RETIRE = 10
+private const val GLOBAL_PRIZE_LOSS_INCREMENT = 5
+
 @Composable
 public fun GameScreen(
     jugador: String,
@@ -119,6 +123,9 @@ public fun GameScreen(
     var resultadoPartida by remember { mutableStateOf<ResultadoPartida?>(null) }
     var retiradaVoluntaria by remember { mutableStateOf(false) }
     var showCoinsEffect by remember { mutableStateOf(false) }
+    var premioComunActual by remember { mutableStateOf(0) }
+    var premioCobradoEnVictoria by remember { mutableStateOf(0) }
+    var cargandoPremio by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val repo = remember { PartidasRepository(context) }
@@ -179,10 +186,56 @@ public fun GameScreen(
     val inicioPartida = remember { System.currentTimeMillis() }
 
     val locationHelper = locationHelper(context)
+    val canRetireAsVictory = monedas >= MIN_COINS_TO_RETIRE
+
+    fun loadGlobalPrize() {
+        cargandoPremio = true
+        firebaseGameRepository.getGlobalPrize()
+            .addOnSuccessListener { prize ->
+                premioComunActual = prize.amount
+                cargandoPremio = false
+                Log.d("Firebase", "Premio comun cargado: ${prize.amount}")
+            }
+            .addOnFailureListener { error ->
+                cargandoPremio = false
+                Log.e("Firebase", "Error cargando premio comun", error)
+            }
+    }
+
+    fun registerOnlineVictoryWithPrize(prizeAmount: Int) {
+        premioCobradoEnVictoria = prizeAmount
+        premioComunActual = 0
+        val scoreFinalOnline = monedas + prizeAmount
+
+        firebaseGameRepository.registerVictory(scoreFinalOnline)
+            .addOnSuccessListener {
+                Log.d(
+                    "Firebase",
+                    "Victoria registrada con puntuacion online: $scoreFinalOnline"
+                )
+            }
+            .addOnFailureListener { error ->
+                Log.e("Firebase", "Error saving victory in Firebase", error)
+            }
+    }
+
+    LaunchedEffect(Unit) {
+        loadGlobalPrize()
+    }
 
     fun finishGameAsDefeat(monedasFinales: Int) {
         resultadoPartida = ResultadoPartida.Derrota(monedasFinales)
-        // TODO incrementar premio comun por derrota.
+        premioComunActual += GLOBAL_PRIZE_LOSS_INCREMENT
+        firebaseGameRepository.increaseGlobalPrize(GLOBAL_PRIZE_LOSS_INCREMENT)
+            .addOnSuccessListener {
+                Log.d(
+                    "Firebase",
+                    "Premio comun incrementado en $GLOBAL_PRIZE_LOSS_INCREMENT"
+                )
+            }
+            .addOnFailureListener { error ->
+                Log.e("Firebase", "Error incrementando premio comun", error)
+            }
         partidaFinalizada = true
     }
 
@@ -223,11 +276,16 @@ public fun GameScreen(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     {
-                        firebaseGameRepository.registerVictory(monedas)
-                            .addOnFailureListener { error ->
-                                Log.e("Firebase", "Error saving victory in Firebase", error)
+                        firebaseGameRepository.claimGlobalPrize()
+                            .addOnSuccessListener { claimedPrize ->
+                                Log.d("Firebase", "Premio comun cobrado: $claimedPrize")
+                                registerOnlineVictoryWithPrize(claimedPrize)
                             }
-                        // TODO cobrar premio comun.
+                            .addOnFailureListener { error ->
+                                Log.e("Firebase", "Error cobrando premio comun", error)
+                                registerOnlineVictoryWithPrize(0)
+                            }
+
                         val readCalendarGranted = ContextCompat.checkSelfPermission(
                             context,
                             Manifest.permission.READ_CALENDAR
@@ -369,6 +427,25 @@ public fun GameScreen(
                                             color = Color.White,
                                             style = MaterialTheme.typography.titleMedium
                                         )
+                                        if (premioCobradoEnVictoria > 0) {
+                                            Text(
+                                                stringResource(
+                                                    R.string.global_prize_won,
+                                                    premioCobradoEnVictoria
+                                                ),
+                                                color = gold,
+                                                style = MaterialTheme.typography.titleMedium,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                            Text(
+                                                stringResource(
+                                                    R.string.final_online_score,
+                                                    partida.monedasFinales + premioCobradoEnVictoria
+                                                ),
+                                                color = Color.White,
+                                                style = MaterialTheme.typography.titleMedium
+                                            )
+                                        }
                                     }
 
                                     is ResultadoPartida.Derrota -> {
@@ -376,6 +453,15 @@ public fun GameScreen(
                                             stringResource(R.string.game_defeat_no_coins),
                                             color = Color.White,
                                             style = MaterialTheme.typography.titleMedium
+                                        )
+                                        Text(
+                                            stringResource(
+                                                R.string.global_prize_increases,
+                                                GLOBAL_PRIZE_LOSS_INCREMENT
+                                            ),
+                                            color = gold,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold
                                         )
                                     }
 
@@ -462,6 +548,25 @@ public fun GameScreen(
                                     stringResource(R.string.bet_total_label, apuestaTotal),
                                     color = Color.White
                                 )
+                                Text(
+                                    stringResource(
+                                        R.string.minimum_coins_to_retire,
+                                        MIN_COINS_TO_RETIRE
+                                    ),
+                                    color = Color.LightGray
+                                )
+                                Text(
+                                    stringResource(R.string.global_prize_label, premioComunActual),
+                                    color = gold,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                if (cargandoPremio) {
+                                    Text(
+                                        stringResource(R.string.loading_global_prize),
+                                        color = Color.LightGray
+                                    )
+                                }
 
                                 if (girando) {
                                     Text(
@@ -853,7 +958,7 @@ public fun GameScreen(
                                     onClick = {
                                         finishGameAsVictory()
                                     },
-                                    enabled = monedas > 0 && !partidaFinalizada,
+                                    enabled = monedas > 0 && canRetireAsVictory && !partidaFinalizada,
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(18.dp),
                                     colors = ButtonDefaults.buttonColors(
@@ -863,6 +968,17 @@ public fun GameScreen(
                                 ) {
                                     Text(
                                         text = stringResource(R.string.retire),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+
+                                if (!canRetireAsVictory) {
+                                    Text(
+                                        text = stringResource(
+                                            R.string.cannot_retire_until_minimum,
+                                            MIN_COINS_TO_RETIRE
+                                        ),
+                                        color = gold,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }

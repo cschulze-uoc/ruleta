@@ -18,6 +18,8 @@ navigationCompose = "2.9.7"
 material3 = "1.4.0"
 playServicesLocation = "21.3.0"
 playServicesAuth = "21.5.0"
+retrofit = "2.11.0"
+moshi = "1.15.1"
 rxandroid = "3.0.2"
 rxjava = "3.1.12"
 
@@ -50,6 +52,9 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3",
 material = { module = "com.google.android.material:material", version.ref = "material" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
+moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
 rxandroid = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxandroid" }
 rxjava = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxjava" }
 

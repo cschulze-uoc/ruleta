@@ -9,6 +9,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.MutableData
 import com.google.firebase.database.Transaction
+import com.apktados.ruleta.data.remote.rest.FirebaseRestClient
 
 class FirebaseGameRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
@@ -18,6 +19,7 @@ class FirebaseGameRepository(
 ) {
 
     private val playersRef = database.reference.child("players")
+    private val globalPrizeRef = database.reference.child("globalPrize")
 
     fun registerVictory(score: Int): Task<Void> {
         val user = auth.currentUser
@@ -76,5 +78,94 @@ class FirebaseGameRepository(
                 )
                 .take(10)
         }
+    }
+
+    fun getGlobalPrize(): Task<GlobalPrizeRemote> {
+        return globalPrizeRef.get().continueWith { task ->
+            if (!task.isSuccessful) {
+                throw task.exception ?: IllegalStateException("Could not load global prize")
+            }
+
+            task.result.getValue(GlobalPrizeRemote::class.java) ?: GlobalPrizeRemote()
+        }
+    }
+
+    // REST read with Retrofit + Moshi required by Producto 3.
+    suspend fun getGlobalPrizeViaRest(): GlobalPrizeRemote {
+        return FirebaseRestClient.api.getGlobalPrize()?.toRemote() ?: GlobalPrizeRemote()
+    }
+
+    fun increaseGlobalPrize(amountToAdd: Int = 5): Task<Void> {
+        val result = TaskCompletionSource<Void>()
+        val now = System.currentTimeMillis()
+
+        globalPrizeRef.runTransaction(object : Transaction.Handler {
+            override fun doTransaction(currentData: MutableData): Transaction.Result {
+                val current = currentData.getValue(GlobalPrizeRemote::class.java)
+                    ?: GlobalPrizeRemote()
+
+                currentData.value = current.copy(
+                    amount = current.amount + amountToAdd,
+                    updatedAt = now
+                )
+                return Transaction.success(currentData)
+            }
+
+            override fun onComplete(
+                error: DatabaseError?,
+                committed: Boolean,
+                currentData: DataSnapshot?
+            ) {
+                when {
+                    error != null -> result.setException(error.toException())
+                    !committed -> result.setException(
+                        IllegalStateException("Firebase transaction was not committed")
+                    )
+                    else -> result.setResult(null)
+                }
+            }
+        })
+
+        return result.task
+    }
+
+    fun claimGlobalPrize(): Task<Int> {
+        val user = auth.currentUser ?: return Tasks.forResult(0)
+        val result = TaskCompletionSource<Int>()
+        val now = System.currentTimeMillis()
+        var claimedAmount = 0
+
+        globalPrizeRef.runTransaction(object : Transaction.Handler {
+            override fun doTransaction(currentData: MutableData): Transaction.Result {
+                val current = currentData.getValue(GlobalPrizeRemote::class.java)
+                    ?: GlobalPrizeRemote()
+
+                claimedAmount = current.amount
+                currentData.value = current.copy(
+                    amount = 0,
+                    updatedAt = now,
+                    lastWinnerUid = user.uid,
+                    lastWinnerName = user.displayName ?: user.email,
+                    lastClaimedAmount = claimedAmount
+                )
+                return Transaction.success(currentData)
+            }
+
+            override fun onComplete(
+                error: DatabaseError?,
+                committed: Boolean,
+                currentData: DataSnapshot?
+            ) {
+                when {
+                    error != null -> result.setException(error.toException())
+                    !committed -> result.setException(
+                        IllegalStateException("Firebase transaction was not committed")
+                    )
+                    else -> result.setResult(claimedAmount)
+                }
+            }
+        })
+
+        return result.task
     }
 }

@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.apktados.ruleta.R
 import com.apktados.ruleta.data.remote.FirebaseGameRepository
+import com.apktados.ruleta.data.remote.GlobalPrizeRemote
 import com.apktados.ruleta.data.remote.PlayerRemote
 import com.apktados.ruleta.ui.bars.RuletaTopBar
 
@@ -47,7 +48,9 @@ fun RankingScreen(navController: NavController) {
     val repository = remember { FirebaseGameRepository() }
 
     var players by remember { mutableStateOf<List<PlayerRemote>>(emptyList()) }
+    var globalPrize by remember { mutableStateOf(GlobalPrizeRemote()) }
     var loading by remember { mutableStateOf(false) }
+    var loadingPrize by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     var refreshKey by remember { mutableStateOf(0) }
 
@@ -67,8 +70,25 @@ fun RankingScreen(navController: NavController) {
             }
     }
 
+    suspend fun loadGlobalPrize() {
+        loadingPrize = true
+        Log.d("FirebaseREST", "Loading global prize via REST")
+
+        try {
+            // Producto 3: lectura REST de Firebase con Retrofit + Moshi.
+            val prize = repository.getGlobalPrizeViaRest()
+            globalPrize = prize
+            Log.d("FirebaseREST", "Global prize REST loaded amount=${prize.amount}")
+        } catch (throwable: Exception) {
+            Log.e("FirebaseREST", "Error loading global prize via REST", throwable)
+        } finally {
+            loadingPrize = false
+        }
+    }
+
     LaunchedEffect(refreshKey) {
         loadRanking()
+        loadGlobalPrize()
     }
 
     val gold = Color(0xFFFFD700)
@@ -125,6 +145,60 @@ fun RankingScreen(navController: NavController) {
                         color = gold,
                         fontWeight = FontWeight.Bold
                     )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = Color.Black.copy(alpha = 0.35f),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = gold.copy(alpha = 0.6f),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(16.dp)
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text(
+                                text = stringResource(
+                                    R.string.global_prize_ranking_state,
+                                    globalPrize.amount
+                                ),
+                                color = gold,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            if (loadingPrize) {
+                                Text(
+                                    text = stringResource(R.string.loading_global_prize),
+                                    color = Color.LightGray
+                                )
+                            }
+
+                            Text(
+                                text = stringResource(
+                                    R.string.global_prize_last_claimed,
+                                    globalPrize.lastClaimedAmount
+                                ),
+                                color = Color.White
+                            )
+
+                            globalPrize.lastWinnerName?.let { winnerName ->
+                                Text(
+                                    text = stringResource(
+                                        R.string.global_prize_last_winner,
+                                        winnerName
+                                    ),
+                                    color = Color.LightGray
+                                )
+                            }
+                        }
+                    }
 
                     Button(
                         onClick = { refreshKey++ },

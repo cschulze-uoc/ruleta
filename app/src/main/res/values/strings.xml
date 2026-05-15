@@ -44,6 +44,10 @@
     <string name="online_ranking_player_row">%1$d. %2$s</string>
     <string name="online_ranking_best_score">Best score: %1$d</string>
     <string name="online_ranking_victories">Victories: %1$d</string>
+    <string name="global_prize_ranking_state">Current pot: %1$d coins</string>
+    <string name="global_prize_last_claimed">Last pot claimed: %1$d coins</string>
+    <string name="global_prize_last_winner">Last winner: %1$s</string>
+    <string name="global_prize_ranking_error">Error loading global prize</string>
 
     <string name="permission_location_granted">Location permission granted</string>
     <string name="permission_location_denied">Location permission denied</string>
@@ -65,6 +69,14 @@
     <string name="coins_label">Coins: %1$d</string>
     <string name="bet_total_label">Bet total: %1$d</string>
     <string name="spinning">Spinning…</string>
+
+    <string name="global_prize_label">Global prize: %1$d</string>
+    <string name="loading_global_prize">Loading global prize…</string>
+    <string name="global_prize_won">Global prize won: %1$d</string>
+    <string name="final_online_score">Final online score: %1$d</string>
+    <string name="global_prize_increases">The global prize increases by %1$d coins.</string>
+    <string name="minimum_coins_to_retire">Minimum to retire: %1$d coins</string>
+    <string name="cannot_retire_until_minimum">You need at least %1$d coins to retire.</string>
 
     <string name="roulette_image">Roulette</string>
     <string name="bets_title">BETS</string>

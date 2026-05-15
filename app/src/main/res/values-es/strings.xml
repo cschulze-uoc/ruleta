@@ -44,6 +44,10 @@
     <string name="online_ranking_player_row">%1$d. %2$s</string>
     <string name="online_ranking_best_score">Mejor puntuacion: %1$d</string>
     <string name="online_ranking_victories">Victorias: %1$d</string>
+    <string name="global_prize_ranking_state">Bote actual: %1$d monedas</string>
+    <string name="global_prize_last_claimed">Último bote cobrado: %1$d monedas</string>
+    <string name="global_prize_last_winner">Último ganador: %1$s</string>
+    <string name="global_prize_ranking_error">Error cargando premio común</string>
 
     <string name="permission_location_granted">Permiso de ubicación concedido</string>
     <string name="permission_location_denied">Permiso de ubicación denegado</string>
@@ -65,6 +69,14 @@
     <string name="coins_label">Monedas: %1$d</string>
     <string name="bet_total_label">Apostado: %1$d</string>
     <string name="spinning">Girando…</string>
+
+    <string name="global_prize_label">Premio común: %1$d</string>
+    <string name="loading_global_prize">Cargando premio común…</string>
+    <string name="global_prize_won">Premio común ganado: %1$d</string>
+    <string name="final_online_score">Puntuacion online final: %1$d</string>
+    <string name="global_prize_increases">El premio común aumenta en %1$d monedas.</string>
+    <string name="minimum_coins_to_retire">Mínimo para retirarse: %1$d monedas</string>
+    <string name="cannot_retire_until_minimum">Necesitas al menos %1$d monedas para retirarte.</string>
 
     <string name="roulette_image">Ruleta</string>
     <string name="bets_title">APUESTAS</string>

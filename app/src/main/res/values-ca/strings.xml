@@ -45,6 +45,10 @@
     <string name="online_ranking_player_row">%1$d. %2$s</string>
     <string name="online_ranking_best_score">Millor puntuacio: %1$d</string>
     <string name="online_ranking_victories">Victories: %1$d</string>
+    <string name="global_prize_ranking_state">Pot actual: %1$d monedes</string>
+    <string name="global_prize_last_claimed">Ultim pot cobrat: %1$d monedes</string>
+    <string name="global_prize_last_winner">Ultim guanyador: %1$s</string>
+    <string name="global_prize_ranking_error">Error carregant premi comu</string>
 
     <string name="permission_location_granted">Permís d\'ubicació concedit</string>
     <string name="permission_location_denied">Permís d\'ubicació denegat</string>
@@ -66,6 +70,14 @@
     <string name="coins_label">Monedes: %1$d</string>
     <string name="bet_total_label">Apostat: %1$d</string>
     <string name="spinning">Girant…</string>
+
+    <string name="global_prize_label">Premi comu: %1$d</string>
+    <string name="loading_global_prize">Carregant premi comu…</string>
+    <string name="global_prize_won">Premi comu guanyat: %1$d</string>
+    <string name="final_online_score">Puntuacio online final: %1$d</string>
+    <string name="global_prize_increases">El premi comu augmenta en %1$d monedes.</string>
+    <string name="minimum_coins_to_retire">Minim per retirar-se: %1$d monedes</string>
+    <string name="cannot_retire_until_minimum">Necessites almenys %1$d monedes per retirar-te.</string>
 
     <string name="roulette_image">Ruleta</string>
     <string name="bets_title">APOSTES</string>
