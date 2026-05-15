@@ -225,6 +225,15 @@ fun HomeScreen(
 
     val gold = Color(0xFFFFD700)
     val darkOverlay = Color(0xCC111111)
+    val googlePlayerName = (authState as? AuthState.Authenticated)?.user?.let { user ->
+        user.name ?: user.email ?: user.uid
+    }
+
+    LaunchedEffect(googlePlayerName) {
+        if (googlePlayerName != null) {
+            jugador = googlePlayerName
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -397,7 +406,12 @@ fun HomeScreen(
 
                     OutlinedTextField(
                         value = jugador,
-                        onValueChange = { jugador = it },
+                        onValueChange = {
+                            if (googlePlayerName == null) {
+                                jugador = it
+                            }
+                        },
+                        readOnly = googlePlayerName != null,
                         label = {
                             Text(
                                 text = stringResource(R.string.player_name),
