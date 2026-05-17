@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "768907258193",
+    "project_id": "apktados-ruleta",
+    "storage_bucket": "apktados-ruleta.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:768907258193:android:807467e8511f1ca9300b70",
+        "android_client_info": {
+          "package_name": "com.apktados.ruleta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "768907258193-ru93l7affa4v64rb6baaddqvd5733ivu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.apktados.ruleta",
+            "certificate_hash": "cbbfebba4369ed122fdae0071ca1af650c671d98"
+          }
+        },
+        {
+          "client_id": "768907258193-uchuqqice64qkcmch6dp1t2m534ns8kq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhqxrCq7A_FRaNP2ytA-FujzhHkhW1LRo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "768907258193-uchuqqice64qkcmch6dp1t2m534ns8kq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

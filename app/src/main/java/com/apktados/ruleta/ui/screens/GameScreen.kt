@@ -45,6 +45,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,6 +70,7 @@ import com.apktados.ruleta.R
 import com.apktados.ruleta.calendar.CalendarHelper
 import com.apktados.ruleta.data.PartidasRepository
 import com.apktados.ruleta.game.ApuestaEvaluator
+import com.apktados.ruleta.game.ResultadoPartida
 import com.apktados.ruleta.game.ResultadoRuleta
 import com.apktados.ruleta.game.RuletaEngine
 import com.apktados.ruleta.game.TipoApuesta
@@ -78,9 +80,13 @@ import com.apktados.ruleta.ui.bars.RuletaTopBar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import com.apktados.ruleta.data.remote.FirebaseGameRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.OutputStream
+
+private const val MIN_COINS_TO_RETIRE = 10
+private const val GLOBAL_PRIZE_LOSS_INCREMENT = 5
 
 @Composable
 public fun GameScreen(
@@ -114,11 +120,16 @@ public fun GameScreen(
     var resultado by remember { mutableStateOf<ResultadoRuleta?>(null) }
 
     var partidaFinalizada by remember { mutableStateOf(false) }
+    var resultadoPartida by remember { mutableStateOf<ResultadoPartida?>(null) }
     var retiradaVoluntaria by remember { mutableStateOf(false) }
     var showCoinsEffect by remember { mutableStateOf(false) }
+    var premioComunActual by remember { mutableStateOf(0) }
+    var premioCobradoEnVictoria by remember { mutableStateOf(0) }
+    var cargandoPremio by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val repo = remember { PartidasRepository(context) }
+    val firebaseGameRepository = remember { FirebaseGameRepository() }
     val scope = rememberCoroutineScope()
     val calendarHelper = remember { CalendarHelper(context) }
 
@@ -175,6 +186,161 @@ public fun GameScreen(
     val inicioPartida = remember { System.currentTimeMillis() }
 
     val locationHelper = locationHelper(context)
+    // Evita entrar en una partida y retirarse directamente para cobrar el bote.
+    val canRetireAsVictory = monedas >= MIN_COINS_TO_RETIRE
+
+    fun loadGlobalPrize() {
+        cargandoPremio = true
+        firebaseGameRepository.getGlobalPrize()
+            .addOnSuccessListener { prize ->
+                premioComunActual = prize.amount
+                cargandoPremio = false
+                Log.d("Firebase", "Premio comun cargado: ${prize.amount}")
+            }
+            .addOnFailureListener { error ->
+                cargandoPremio = false
+                Log.e("Firebase", "Error cargando premio comun", error)
+            }
+    }
+
+    fun registerOnlineVictoryWithPrize(prizeAmount: Int) {
+        premioCobradoEnVictoria = prizeAmount
+        premioComunActual = 0
+        val scoreFinalOnline = monedas + prizeAmount
+
+        firebaseGameRepository.registerVictory(scoreFinalOnline)
+            .addOnSuccessListener {
+                Log.d(
+                    "Firebase",
+                    "Victoria registrada con puntuacion online: $scoreFinalOnline"
+                )
+            }
+            .addOnFailureListener { error ->
+                Log.e("Firebase", "Error saving victory in Firebase", error)
+            }
+    }
+
+    LaunchedEffect(Unit) {
+        loadGlobalPrize()
+    }
+
+    fun finishGameAsDefeat(monedasFinales: Int) {
+        resultadoPartida = ResultadoPartida.Derrota(monedasFinales)
+        premioComunActual += GLOBAL_PRIZE_LOSS_INCREMENT
+        // La derrota no se guarda localmente, pero si aporta monedas al bote comun.
+        firebaseGameRepository.increaseGlobalPrize(GLOBAL_PRIZE_LOSS_INCREMENT)
+            .addOnSuccessListener {
+                Log.d(
+                    "Firebase",
+                    "Premio comun incrementado en $GLOBAL_PRIZE_LOSS_INCREMENT"
+                )
+            }
+            .addOnFailureListener { error ->
+                Log.e("Firebase", "Error incrementando premio comun", error)
+            }
+        partidaFinalizada = true
+    }
+
+    fun finishGameAsVictory() {
+        val tiempoResolucionMs = System.currentTimeMillis() - inicioPartida
+        val fechaVictoria = System.currentTimeMillis()
+        retiradaVoluntaria = true
+        resultadoPartida = ResultadoPartida.Victoria(
+            monedasFinales = monedas,
+            tiempoResolucionMs = tiempoResolucionMs
+        )
+
+        scope.launch {
+            val fineGranted = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+
+            val coarseGranted = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+
+            val location = if (fineGranted || coarseGranted) {
+                locationHelper.obtenerUbicacionActual()
+            } else {
+                null
+            }
+
+            val disposable = repo.guardarPartida(
+                jugador = jugador,
+                monedasFinales = monedas,
+                lat = location?.latitude,
+                lon = location?.longitude,
+                tiempo = tiempoResolucionMs
+            )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        firebaseGameRepository.claimGlobalPrize()
+                            .addOnSuccessListener { claimedPrize ->
+                                Log.d("Firebase", "Premio comun cobrado: $claimedPrize")
+                                // Para el ranking online cuenta la puntuacion con el bote incluido.
+                                registerOnlineVictoryWithPrize(claimedPrize)
+                            }
+                            .addOnFailureListener { error ->
+                                Log.e("Firebase", "Error cobrando premio comun", error)
+                                registerOnlineVictoryWithPrize(0)
+                            }
+
+                        val readCalendarGranted = ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.READ_CALENDAR
+                        ) == PackageManager.PERMISSION_GRANTED
+
+                        val writeCalendarGranted = ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.WRITE_CALENDAR
+                        ) == PackageManager.PERMISSION_GRANTED
+
+                        if (readCalendarGranted && writeCalendarGranted) {
+                            val disposableCalendar = calendarHelper.guardarVictoria(
+                                jugador = jugador,
+                                monedasFinales = monedas,
+                                fechaMillis = fechaVictoria
+                            )
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                    {
+                                        NotificationHelper.mostrarVictoria(
+                                            context,
+                                            tiempoResolucionMs
+                                        )
+                                    },
+                                    { error ->
+                                        Log.e(
+                                            "CAL",
+                                            "Error guardando evento en calendario",
+                                            error
+                                        )
+                                        NotificationHelper.mostrarVictoria(
+                                            context,
+                                            tiempoResolucionMs
+                                        )
+                                    }
+                                )
+
+                            disposables.add(disposableCalendar)
+                        } else {
+                            NotificationHelper.mostrarVictoria(context, tiempoResolucionMs)
+                        }
+
+                        partidaFinalizada = true
+                    },
+                    { error -> Log.e("DB", context.getString(R.string.db_save_error), error) }
+                )
+
+            disposables.add(disposable)
+        }
+    }
+
 
     Scaffold(
         topBar = {
@@ -184,7 +350,7 @@ public fun GameScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateHome = { navController.navigate("home") },
                 onNavigateRanking = {
-                    navController.navigate("history")
+                    navController.navigate("ranking")
                 },
                 onNavigateGame = {},
                 onNavigateHelp = { navController.navigate("help") }
@@ -237,17 +403,79 @@ public fun GameScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
+                                val partida = resultadoPartida
                                 Text(
-                                    stringResource(R.string.game_finished),
+                                    when (partida) {
+                                        is ResultadoPartida.Victoria -> stringResource(R.string.game_victory_title)
+                                        is ResultadoPartida.Derrota -> stringResource(R.string.game_defeat_title)
+                                        null -> stringResource(R.string.game_finished)
+                                    },
                                     color = gold,
                                     fontWeight = FontWeight.Bold,
                                     style = MaterialTheme.typography.titleLarge
                                 )
-                                Text(
-                                    stringResource(R.string.final_coins, monedas),
-                                    color = Color.White,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
+
+                                when (partida) {
+                                    is ResultadoPartida.Victoria -> {
+                                        Text(
+                                            stringResource(R.string.final_coins, partida.monedasFinales),
+                                            color = Color.White,
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                        Text(
+                                            stringResource(
+                                                R.string.resolution_time_seconds,
+                                                partida.tiempoResolucionMs / 1000
+                                            ),
+                                            color = Color.White,
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                        if (premioCobradoEnVictoria > 0) {
+                                            Text(
+                                                stringResource(
+                                                    R.string.global_prize_won,
+                                                    premioCobradoEnVictoria
+                                                ),
+                                                color = gold,
+                                                style = MaterialTheme.typography.titleMedium,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                            Text(
+                                                stringResource(
+                                                    R.string.final_online_score,
+                                                    partida.monedasFinales + premioCobradoEnVictoria
+                                                ),
+                                                color = Color.White,
+                                                style = MaterialTheme.typography.titleMedium
+                                            )
+                                        }
+                                    }
+
+                                    is ResultadoPartida.Derrota -> {
+                                        Text(
+                                            stringResource(R.string.game_defeat_no_coins),
+                                            color = Color.White,
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                        Text(
+                                            stringResource(
+                                                R.string.global_prize_increases,
+                                                GLOBAL_PRIZE_LOSS_INCREMENT
+                                            ),
+                                            color = gold,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+
+                                    null -> {
+                                        Text(
+                                            stringResource(R.string.final_coins, monedas),
+                                            color = Color.White,
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                    }
+                                }
 
                                 Button(
                                     onClick = {
@@ -323,6 +551,25 @@ public fun GameScreen(
                                     stringResource(R.string.bet_total_label, apuestaTotal),
                                     color = Color.White
                                 )
+                                Text(
+                                    stringResource(
+                                        R.string.minimum_coins_to_retire,
+                                        MIN_COINS_TO_RETIRE
+                                    ),
+                                    color = Color.LightGray
+                                )
+                                Text(
+                                    stringResource(R.string.global_prize_label, premioComunActual),
+                                    color = gold,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                if (cargandoPremio) {
+                                    Text(
+                                        stringResource(R.string.loading_global_prize),
+                                        color = Color.LightGray
+                                    )
+                                }
 
                                 if (girando) {
                                     Text(
@@ -683,7 +930,7 @@ public fun GameScreen(
                                             showCoinsEffect = false
 
                                             if (monedas <= 0) {
-                                                partidaFinalizada = true
+                                                finishGameAsDefeat(monedas)
                                             }
 
                                             girando = false
@@ -712,100 +959,9 @@ public fun GameScreen(
 
                                 Button(
                                     onClick = {
-                                        retiradaVoluntaria = true
-                                        partidaFinalizada = true
-
-                                        val fineGranted = ContextCompat.checkSelfPermission(
-                                            context,
-                                            Manifest.permission.ACCESS_FINE_LOCATION
-                                        ) == PackageManager.PERMISSION_GRANTED
-
-                                        val coarseGranted = ContextCompat.checkSelfPermission(
-                                            context,
-                                            Manifest.permission.ACCESS_COARSE_LOCATION
-                                        ) == PackageManager.PERMISSION_GRANTED
-
-                                        if (fineGranted || coarseGranted) {
-                                            scope.launch {
-                                                val location = locationHelper.obtenerUbicacionActual()
-                                                val tiempoResolucionMs =
-                                                    System.currentTimeMillis() - inicioPartida
-                                                val fechaVictoria = System.currentTimeMillis()
-
-                                                val disposable = repo.guardarPartida(
-                                                    jugador = jugador,
-                                                    monedasFinales = monedas,
-                                                    lat = location?.latitude,
-                                                    lon = location?.longitude,
-                                                    tiempo = tiempoResolucionMs
-                                                )
-                                                    .subscribeOn(Schedulers.io())
-                                                    .observeOn(AndroidSchedulers.mainThread())
-                                                    .subscribe(
-                                                        {
-                                                            val readCalendarGranted =
-                                                                ContextCompat.checkSelfPermission(
-                                                                    context,
-                                                                    Manifest.permission.READ_CALENDAR
-                                                                ) == PackageManager.PERMISSION_GRANTED
-
-                                                            val writeCalendarGranted =
-                                                                ContextCompat.checkSelfPermission(
-                                                                    context,
-                                                                    Manifest.permission.WRITE_CALENDAR
-                                                                ) == PackageManager.PERMISSION_GRANTED
-
-                                                            if (readCalendarGranted && writeCalendarGranted) {
-                                                                val disposableCalendar =
-                                                                    calendarHelper.guardarVictoria(
-                                                                        jugador = jugador,
-                                                                        monedasFinales = monedas,
-                                                                        fechaMillis = fechaVictoria
-                                                                    )
-                                                                        .subscribeOn(Schedulers.io())
-                                                                        .observeOn(AndroidSchedulers.mainThread())
-                                                                        .subscribe(
-                                                                            {
-                                                                                NotificationHelper.mostrarVictoria(
-                                                                                    context,
-                                                                                    tiempoResolucionMs
-                                                                                )
-                                                                            },
-                                                                            { error ->
-                                                                                Log.e(
-                                                                                    "CAL",
-                                                                                    "Error guardando evento en calendario",
-                                                                                    error
-                                                                                )
-                                                                                NotificationHelper.mostrarVictoria(
-                                                                                    context,
-                                                                                    tiempoResolucionMs
-                                                                                )
-                                                                            }
-                                                                        )
-
-                                                                disposables.add(disposableCalendar)
-                                                            } else {
-                                                                NotificationHelper.mostrarVictoria(
-                                                                    context,
-                                                                    tiempoResolucionMs
-                                                                )
-                                                            }
-                                                        },
-                                                        { error ->
-                                                            Log.e(
-                                                                "DB",
-                                                                context.getString(R.string.db_save_error),
-                                                                error
-                                                            )
-                                                        }
-                                                    )
-
-                                                disposables.add(disposable)
-                                            }
-                                        }
+                                        finishGameAsVictory()
                                     },
-                                    enabled = monedas > 0 && !partidaFinalizada,
+                                    enabled = monedas > 0 && canRetireAsVictory && !partidaFinalizada,
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(18.dp),
                                     colors = ButtonDefaults.buttonColors(
@@ -815,6 +971,17 @@ public fun GameScreen(
                                 ) {
                                     Text(
                                         text = stringResource(R.string.retire),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+
+                                if (!canRetireAsVictory) {
+                                    Text(
+                                        text = stringResource(
+                                            R.string.cannot_retire_until_minimum,
+                                            MIN_COINS_TO_RETIRE
+                                        ),
+                                        color = gold,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
@@ -871,24 +1038,6 @@ public fun GameScreen(
                             }
                         }
 
-                        if (monedas <= 0) {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = stringResource(R.string.no_coins_cd),
-                                    tint = Color.Red
-                                )
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                Text(
-                                    stringResource(R.string.no_coins_message),
-                                    color = Color.White
-                                )
-                            }
-                            partidaFinalizada = true
-                        }
                     }
                 }
             }

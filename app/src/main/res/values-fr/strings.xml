@@ -27,10 +27,27 @@
     <string name="music_off">Musique OFF</string>
     <string name="choose_music">Choisir une musique</string>
 
+    <string name="sign_in_with_google">Se connecter avec Google</string>
+    <string name="signed_in_as">Connecte en tant que %1$s</string>
+    <string name="sign_out">Se deconnecter</string>
+    <string name="google_sign_in_error">Erreur de connexion avec Google</string>
+
     <string name="best_scores">Meilleurs scores</string>
     <string name="loading">Chargement…</string>
     <string name="no_games_yet">Aucune partie pour le moment.</string>
     <string name="score_row">%1$d. %2$s - %3$d jetons</string>
+    <string name="online_ranking_title">Ranking en ligne</string>
+    <string name="refresh_ranking">Actualiser le ranking</string>
+    <string name="loading_online_ranking">Chargement du ranking en ligne…</string>
+    <string name="no_online_scores">Il n\'y a pas encore de scores en ligne.</string>
+    <string name="online_ranking_error">Erreur de chargement du ranking en ligne</string>
+    <string name="online_ranking_player_row">%1$d. %2$s</string>
+    <string name="online_ranking_best_score">Meilleur score : %1$d</string>
+    <string name="online_ranking_victories">Victoires : %1$d</string>
+    <string name="global_prize_ranking_state">Pot actuel : %1$d jetons</string>
+    <string name="global_prize_last_claimed">Dernier pot gagne : %1$d jetons</string>
+    <string name="global_prize_last_winner">Dernier gagnant : %1$s</string>
+    <string name="global_prize_ranking_error">Erreur de chargement du prix commun</string>
 
     <string name="permission_location_granted">Autorisation de localisation accordée</string>
     <string name="permission_location_denied">Autorisation de localisation refusée</string>
@@ -41,13 +58,25 @@
 
     <string name="roulette_title">Roulette</string>
     <string name="game_finished">PARTIE TERMINÉE</string>
+    <string name="game_victory_title">VICTOIRE</string>
+    <string name="game_defeat_title">DEFAITE</string>
+    <string name="game_defeat_no_coins">Vous n\'avez plus de jetons.</string>
     <string name="final_coins">Jetons finaux : %1$d</string>
+    <string name="resolution_time_seconds">Temps de resolution : %1$d secondes</string>
     <string name="back_to_menu">Retour au menu</string>
 
     <string name="player_label">Joueur : %1$s</string>
     <string name="coins_label">Jetons : %1$d</string>
     <string name="bet_total_label">Mise totale : %1$d</string>
     <string name="spinning">En rotation…</string>
+
+    <string name="global_prize_label">Prix commun : %1$d</string>
+    <string name="loading_global_prize">Chargement du prix commun…</string>
+    <string name="global_prize_won">Prix commun gagne : %1$d</string>
+    <string name="final_online_score">Score online final : %1$d</string>
+    <string name="global_prize_increases">Le prix commun augmente de %1$d jetons.</string>
+    <string name="minimum_coins_to_retire">Minimum pour se retirer : %1$d jetons</string>
+    <string name="cannot_retire_until_minimum">Il faut au moins %1$d jetons pour se retirer.</string>
 
     <string name="roulette_image">Roulette</string>
     <string name="bets_title">PARIS</string>

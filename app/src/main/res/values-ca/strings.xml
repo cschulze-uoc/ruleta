@@ -27,10 +27,28 @@
     <string name="music_off">Música OFF</string>
     <string name="choose_music">Escollir música</string>
 
+    <string name="sign_in_with_google">Iniciar sessio amb Google</string>
+    <string name="signed_in_as">Sessio iniciada com %1$s</string>
+    <string name="sign_out">Tancar sessio</string>
+    <string name="google_sign_in_error">Error en iniciar sessio amb Google</string>
+
     <string name="best_scores">Millors puntuacions</string>
     <string name="loading">Carregant…</string>
     <string name="no_games_yet">Encara no hi ha partides.</string>
     <string name="score_row">%1$d. %2$s - %3$d monedes</string>
+
+    <string name="online_ranking_title">Ranking online</string>
+    <string name="refresh_ranking">Refrescar ranking</string>
+    <string name="loading_online_ranking">Carregant ranking online…</string>
+    <string name="no_online_scores">Encara no hi ha puntuacions online.</string>
+    <string name="online_ranking_error">Error carregant ranking online</string>
+    <string name="online_ranking_player_row">%1$d. %2$s</string>
+    <string name="online_ranking_best_score">Millor puntuacio: %1$d</string>
+    <string name="online_ranking_victories">Victories: %1$d</string>
+    <string name="global_prize_ranking_state">Pot actual: %1$d monedes</string>
+    <string name="global_prize_last_claimed">Ultim pot cobrat: %1$d monedes</string>
+    <string name="global_prize_last_winner">Ultim guanyador: %1$s</string>
+    <string name="global_prize_ranking_error">Error carregant premi comu</string>
 
     <string name="permission_location_granted">Permís d\'ubicació concedit</string>
     <string name="permission_location_denied">Permís d\'ubicació denegat</string>
@@ -41,13 +59,25 @@
 
     <string name="roulette_title">Ruleta</string>
     <string name="game_finished">PARTIDA FINALITZADA</string>
+    <string name="game_victory_title">VICTORIA</string>
+    <string name="game_defeat_title">DERROTA</string>
+    <string name="game_defeat_no_coins">T\'has quedat sense monedes.</string>
     <string name="final_coins">Monedes finals: %1$d</string>
+    <string name="resolution_time_seconds">Temps de resolucio: %1$d segons</string>
     <string name="back_to_menu">Tornar al menú</string>
 
     <string name="player_label">Jugador: %1$s</string>
     <string name="coins_label">Monedes: %1$d</string>
     <string name="bet_total_label">Apostat: %1$d</string>
     <string name="spinning">Girant…</string>
+
+    <string name="global_prize_label">Premi comu: %1$d</string>
+    <string name="loading_global_prize">Carregant premi comu…</string>
+    <string name="global_prize_won">Premi comu guanyat: %1$d</string>
+    <string name="final_online_score">Puntuacio online final: %1$d</string>
+    <string name="global_prize_increases">El premi comu augmenta en %1$d monedes.</string>
+    <string name="minimum_coins_to_retire">Minim per retirar-se: %1$d monedes</string>
+    <string name="cannot_retire_until_minimum">Necessites almenys %1$d monedes per retirar-te.</string>
 
     <string name="roulette_image">Ruleta</string>
     <string name="bets_title">APOSTES</string>

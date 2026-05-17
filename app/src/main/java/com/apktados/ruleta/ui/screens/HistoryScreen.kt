@@ -94,7 +94,7 @@ fun HistoryScreen(navController: NavController) {
                 titulo = stringResource(R.string.history),
                 onBack = { navController.popBackStack() },
                 onNavigateHome = { navController.navigate("home") },
-                onNavigateRanking = { navController.navigate("history") },
+                onNavigateRanking = { navController.navigate("ranking") },
                 onNavigateGame = { navController.navigate("home") },
                 onNavigateHelp = { navController.navigate("help") }
             )

@@ -26,11 +26,28 @@
     <string name="music_on">Music ON</string>
     <string name="music_off">Music OFF</string>
     <string name="choose_music">Choose music</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="signed_in_as">Signed in as %1$s</string>
+    <string name="sign_out">Sign out</string>
+    <string name="google_sign_in_error">Error signing in with Google</string>
 
     <string name="best_scores">Best scores</string>
     <string name="loading">Loading…</string>
     <string name="no_games_yet">There are no games yet.</string>
     <string name="score_row">%1$d. %2$s - %3$d coins</string>
+
+    <string name="online_ranking_title">Online ranking</string>
+    <string name="refresh_ranking">Refresh ranking</string>
+    <string name="loading_online_ranking">Loading online ranking…</string>
+    <string name="no_online_scores">There are no online scores yet.</string>
+    <string name="online_ranking_error">Error loading online ranking</string>
+    <string name="online_ranking_player_row">%1$d. %2$s</string>
+    <string name="online_ranking_best_score">Best score: %1$d</string>
+    <string name="online_ranking_victories">Victories: %1$d</string>
+    <string name="global_prize_ranking_state">Current pot: %1$d coins</string>
+    <string name="global_prize_last_claimed">Last pot claimed: %1$d coins</string>
+    <string name="global_prize_last_winner">Last winner: %1$s</string>
+    <string name="global_prize_ranking_error">Error loading global prize</string>
 
     <string name="permission_location_granted">Location permission granted</string>
     <string name="permission_location_denied">Location permission denied</string>
@@ -41,13 +58,25 @@
 
     <string name="roulette_title">Roulette</string>
     <string name="game_finished">GAME OVER</string>
+    <string name="game_victory_title">VICTORY</string>
+    <string name="game_defeat_title">DEFEAT</string>
+    <string name="game_defeat_no_coins">You have run out of coins.</string>
     <string name="final_coins">Final coins: %1$d</string>
+    <string name="resolution_time_seconds">Resolution time: %1$d seconds</string>
     <string name="back_to_menu">Back to menu</string>
 
     <string name="player_label">Player: %1$s</string>
     <string name="coins_label">Coins: %1$d</string>
     <string name="bet_total_label">Bet total: %1$d</string>
     <string name="spinning">Spinning…</string>
+
+    <string name="global_prize_label">Global prize: %1$d</string>
+    <string name="loading_global_prize">Loading global prize…</string>
+    <string name="global_prize_won">Global prize won: %1$d</string>
+    <string name="final_online_score">Final online score: %1$d</string>
+    <string name="global_prize_increases">The global prize increases by %1$d coins.</string>
+    <string name="minimum_coins_to_retire">Minimum to retire: %1$d coins</string>
+    <string name="cannot_retire_until_minimum">You need at least %1$d coins to retire.</string>
 
     <string name="roulette_image">Roulette</string>
     <string name="bets_title">BETS</string>

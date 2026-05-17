@@ -53,6 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.apktados.ruleta.R
+import com.apktados.ruleta.auth.AuthManager
+import com.apktados.ruleta.auth.AuthState
 import com.apktados.ruleta.data.Partida
 import com.apktados.ruleta.data.PartidasRepository
 import com.apktados.ruleta.notification.NotificationHelper
@@ -72,9 +74,24 @@ fun HomeScreen(
 
     val context = LocalContext.current
     val repo = remember { PartidasRepository(context) }
+    val authManager = remember { AuthManager(context) }
+    var authState by remember { mutableStateOf(authManager.currentState()) }
 
     val app = context.applicationContext as com.apktados.ruleta.RuletaApp
     val musicManager = app.musicManager
+
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        try {
+            authManager.signInWithGoogleResult(result.data)
+                .addOnFailureListener { error ->
+                    Log.e("AUTH", context.getString(R.string.google_sign_in_error), error)
+                }
+        } catch (error: Exception) {
+            Log.e("AUTH", context.getString(R.string.google_sign_in_error), error)
+        }
+    }
 
     val musicPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
@@ -172,6 +189,16 @@ fun HomeScreen(
 
     val disposables = remember { CompositeDisposable() }
 
+    DisposableEffect(authManager) {
+        val listener = authManager.addAuthStateListener { state ->
+            authState = state
+        }
+
+        onDispose {
+            authManager.removeAuthStateListener(listener)
+        }
+    }
+
     DisposableEffect(Unit) {
         loading = true
 
@@ -198,6 +225,15 @@ fun HomeScreen(
 
     val gold = Color(0xFFFFD700)
     val darkOverlay = Color(0xCC111111)
+    val googlePlayerName = (authState as? AuthState.Authenticated)?.user?.let { user ->
+        user.name ?: user.email ?: user.uid
+    }
+
+    LaunchedEffect(googlePlayerName) {
+        if (googlePlayerName != null) {
+            jugador = googlePlayerName
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -205,7 +241,7 @@ fun HomeScreen(
                 titulo = stringResource(R.string.topbar_title),
                 onBack = { navController.popBackStack() },
                 onNavigateHome = { navController.navigate("home") },
-                onNavigateRanking = { navController.navigate("history") },
+                onNavigateRanking = { navController.navigate("ranking") },
                 onNavigateGame = { onNuevaPartida(jugador) },
                 onNavigateHelp = { navController.navigate("help") }
             )
@@ -250,6 +286,79 @@ fun HomeScreen(
                         color = gold,
                         fontWeight = FontWeight.ExtraBold
                     )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = Color.Black.copy(alpha = 0.35f),
+                                shape = RoundedCornerShape(14.dp)
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = gold.copy(alpha = 0.5f),
+                                shape = RoundedCornerShape(14.dp)
+                            )
+                            .padding(12.dp)
+                    ) {
+                        when (val state = authState) {
+                            is AuthState.Authenticated -> {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = stringResource(
+                                            R.string.signed_in_as,
+                                            state.user.name ?: state.user.email ?: state.user.uid
+                                        ),
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                    state.user.email?.let { email ->
+                                        Text(
+                                            text = email,
+                                            color = Color.LightGray,
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    }
+
+                                    OutlinedButton(
+                                        onClick = { authManager.signOut() },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        shape = RoundedCornerShape(14.dp),
+                                        border = BorderStroke(1.dp, gold),
+                                        colors = ButtonDefaults.outlinedButtonColors(
+                                            contentColor = gold
+                                        )
+                                    ) {
+                                        Text(stringResource(R.string.sign_out))
+                                    }
+                                }
+                            }
+
+                            AuthState.NotAuthenticated -> {
+                                Button(
+                                    onClick = {
+                                        googleSignInLauncher.launch(authManager.signInIntent())
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.White,
+                                        contentColor = Color.Black
+                                    )
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.sign_in_with_google),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
 
                     Button(
                         onClick = { musicManager.toggleMusic() },
@@ -297,7 +406,12 @@ fun HomeScreen(
 
                     OutlinedTextField(
                         value = jugador,
-                        onValueChange = { jugador = it },
+                        onValueChange = {
+                            if (googlePlayerName == null) {
+                                jugador = it
+                            }
+                        },
+                        readOnly = googlePlayerName != null,
                         label = {
                             Text(
                                 text = stringResource(R.string.player_name),

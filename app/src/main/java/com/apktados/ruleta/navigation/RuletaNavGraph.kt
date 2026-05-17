@@ -32,6 +32,10 @@ fun RuletaNavGraph() {
             HistoryScreen(navController)
         }
 
+        composable("ranking") {
+            RankingScreen(navController)
+        }
+
         composable("help") {
             HelpScreen(navController)
         }
